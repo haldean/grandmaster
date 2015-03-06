@@ -1,5 +1,5 @@
 CC=gcc
-COPTS=-ansi -std=c99 -pedantic -Wall -g
+COPTS=-ansi -std=c99 -pedantic -Wall -Wextra -g
 CSRC=algebraic.c gameio.c tree.c movement.c
 STATICLIB=libgrandmaster.a
 

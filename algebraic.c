@@ -124,8 +124,8 @@ parse_algebraic(
 
     piece.color = result->player;
     piece.piece_type = PAWN;
-    for (i = 0; i < sizeof(ALL_PIECES) / sizeof(piece_type_t); i++) {
-        if (ALL_PIECES[i] == notation[0]) {
+    for (i = 0; i < (int) (sizeof(ALL_PIECES) / sizeof(piece_type_t)); i++) {
+        if ((int) ALL_PIECES[i] == notation[0]) {
             piece.piece_type = notation[0];
             /* strip the piece off the front of the notation */
             notation++;
