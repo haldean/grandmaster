@@ -25,4 +25,7 @@
 void
 read_location(const char *str, struct position *result);
 
+void
+print_move(struct move *);
+
 #endif

@@ -1,5 +1,14 @@
 CC=gcc
-COPTS=-ansi -pedantic -Wall -O3
+COPTS=-ansi -std=c99 -pedantic -Wall -g
+CSRC=algebraic.c gameio.c tree.c
+STATICLIB=libgrandmaster.a
 
-release: *.c *.h
-	$(CC) $(COPTS) *.c -c
+$(STATICLIB): $(CSRC) *.h
+	$(CC) -c $(COPTS) -c $(CSRC)
+	$(AR) rvcs $(STATICLIB) *.o
+
+test: $(STATICLIB)
+	$(CC) $(COPTS) test_algebraic.c -L $(PWD) -lgrandmaster -o test_algebraic
+
+clean:
+	rm -f *.o $(STATICLIB)

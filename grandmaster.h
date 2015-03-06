@@ -26,13 +26,13 @@ typedef uint64_t player_id_t;
 
 typedef enum {
     PAWN = 'p',
-    ROOK = 'r',
-    KNIGHT = 'n',
-    BISHOP = 'b',
-    QUEEN = 'q',
-    KING = 'k'
+    ROOK = 'R',
+    KNIGHT = 'N',
+    BISHOP = 'B',
+    QUEEN = 'Q',
+    KING = 'K'
 } piece_type_t;
-const piece_type_t ALL_PIECES[] = { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING };
+#define ALL_PIECES ((piece_type_t[]) { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING })
 
 typedef enum {
     WHITE = 'w',
@@ -69,6 +69,10 @@ struct game {
     player_id_t player_black;
     struct move *current;
 };
+
+/* Returns a move that contains the root of the full game tree. */
+void
+get_root(struct move *out);
 
 /* Parse algebraic notation and return the result. **out is set to null if the
  * input was not a valid move. */
