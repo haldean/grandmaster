@@ -20,6 +20,7 @@
 #ifndef __GRANDMASTER_H__
 #define __GRANDMASTER_H__
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef uint64_t player_id_t;
@@ -81,5 +82,14 @@ parse_algebraic(
     const char *notation,
     const struct move *last_move,
     struct move **out);
+
+/* Returns true if the movement in the move struct represents a valid movement
+ * for the piece that moved. This only checks the "geometry" of the move, and
+ * that there was no pieces between the start and end point (if applicable). It
+ * does not check for other properties, like not moving into check. */
+bool
+is_movement_valid(
+    const struct move *move,
+    const struct move *last_move);
 
 #endif

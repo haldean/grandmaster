@@ -189,12 +189,11 @@ parse_algebraic(
     }
     goto error;
 
-error:
-    free(result);
-    *out = NULL;
-    return;
-
 done:
+    if (!is_movement_valid(result, last_move)) {
+        goto error;
+    }
+
     if (result->post_board == NULL) {
         result->post_board = calloc(1, sizeof(struct board));
         memcpy(result->post_board, last_move->post_board, sizeof(struct board));
@@ -204,4 +203,10 @@ done:
             (struct piece) { .color = 0, .piece_type = 0 };
     }
     *out = result;
+    return;
+
+error:
+    free(result);
+    *out = NULL;
+    return;
 }
