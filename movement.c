@@ -19,6 +19,8 @@ any_between(
 
     rank_step = sign(end.rank - start.rank);
     file_step = sign(end.file - start.file);
+    d_rank = rank_step;
+    d_file = file_step;
 
     while (start.rank + d_rank != end.rank || start.file + d_file != end.file) {
         p = &board->board[start.rank + d_rank][start.file + d_file];
