@@ -47,8 +47,8 @@ struct piece {
 };
 
 struct position {
-    uint8_t rank;
-    uint8_t file;
+    int8_t rank;
+    int8_t file;
 };
 
 struct move {

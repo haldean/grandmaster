@@ -20,9 +20,9 @@
 #include "grandmaster.h"
 #include "gameio.h"
 
-#include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 int
 parse_castle(
@@ -149,10 +149,10 @@ parse_algebraic(
     if (notation[i] == '#' || notation[i] == '+') {
         notation[i] = '\0';
     }
-    result->end.rank = 0xFF;
-    result->end.file = 0xFF;
+    result->end.rank = -1;
+    result->end.file = -1;
     read_location(&notation[strlen(notation) - 2], &result->end);
-    if (result->end.rank == 0xFF || result->end.file == 0xFF) {
+    if (result->end.rank == -1 || result->end.file == -1) {
         goto error;
     }
 
@@ -171,8 +171,8 @@ parse_algebraic(
 
     /* put in sentinel values so we can tell what was initialized (if anything)
      * during disambiguation loading. */
-    result->start.rank = 0xFF;
-    result->start.file = 0xFF;
+    result->start.rank = -1;
+    result->start.file = -1;
     if (disambig_len == 2) {
         /* easiest case: we have two disambig characters that give us the full
          * location of the start piece. */
