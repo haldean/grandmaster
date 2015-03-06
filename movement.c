@@ -33,18 +33,16 @@ any_between(
 }
 
 bool
-pawn_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+pawn_movement_valid(const struct move *move)
 {
     bool is_capture;
     struct board *b;
     struct piece *last_move_piece;
     int d_rank;
 
-    if (any_between(move->start, move->end, last_move->post_board))
+    if (any_between(move->start, move->end, move->parent->post_board))
         return false;
-    b = last_move->post_board;
+    b = move->parent->post_board;
     is_capture = b->board[move->end.rank][move->end.file].piece_type != 0;
 
     if (is_capture) {
@@ -60,9 +58,9 @@ pawn_movement_valid(
     } else if (move->start.file != move->end.file) {
         /* this might be en passant. let's check it out. */
         /* we can only capture pawns that moved last turn. */
-        if (move->end.file != last_move->end.file)
+        if (move->end.file != move->parent->end.file)
             return false;
-        last_move_piece = &b->board[last_move->end.rank][last_move->end.file];
+        last_move_piece = &b->board[move->parent->end.rank][move->parent->end.file];
         if (last_move_piece->piece_type != PAWN)
             return false;
         if (move->player == WHITE) {
@@ -95,20 +93,16 @@ pawn_movement_valid(
 }
 
 bool
-rook_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+rook_movement_valid(const struct move *move)
 {
-    if (any_between(move->start, move->end, last_move->post_board))
+    if (any_between(move->start, move->end, move->parent->post_board))
         return false;
     return move->start.rank == move->end.rank
         || move->start.file == move->end.file;
 }
 
 bool
-knight_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+knight_movement_valid(const struct move *move)
 {
     int d_rank;
     int d_file;
@@ -119,9 +113,7 @@ knight_movement_valid(
 }
 
 bool
-bishop_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+bishop_movement_valid(const struct move *move)
 {
     int d_rank;
     int d_file;
@@ -130,24 +122,19 @@ bishop_movement_valid(
     d_file = abs(move->start.file - move->end.file);
     if (d_rank != d_file)
         return false;
-    if (any_between(move->start, move->end, last_move->post_board))
+    if (any_between(move->start, move->end, move->parent->post_board))
         return false;
     return true;
 }
 
 bool
-queen_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+queen_movement_valid(const struct move *move)
 {
-    return bishop_movement_valid(move, last_move)
-        || rook_movement_valid(move, last_move);
+    return bishop_movement_valid(move) || rook_movement_valid(move);
 }
 
 bool
-king_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+king_movement_valid(const struct move *move)
 {
     int d_rank;
     int d_file;
@@ -158,9 +145,7 @@ king_movement_valid(
 }
 
 bool
-is_movement_valid(
-    const struct move *move,
-    const struct move *last_move)
+is_movement_valid(const struct move *move)
 {
     struct piece *piece;
     struct piece *captured;
@@ -174,28 +159,28 @@ is_movement_valid(
     if (0 > move->end.file || 7 < move->end.file)
         return false;
 
-    piece = &last_move->post_board->board[move->start.rank][move->start.file];
+    piece = &move->parent->post_board->board[move->start.rank][move->start.file];
     if (piece->piece_type == 0 || piece->color == 0)
         return false;
 
     /* can't capture our own pieces. */
-    captured = &last_move->post_board->board[move->end.rank][move->end.file];
+    captured = &move->parent->post_board->board[move->end.rank][move->end.file];
     if (captured->color == piece->color)
         return false;
 
     switch (piece->piece_type) {
         case PAWN:
-            return pawn_movement_valid(move, last_move);
+            return pawn_movement_valid(move);
         case ROOK:
-            return rook_movement_valid(move, last_move);
+            return rook_movement_valid(move);
         case KNIGHT:
-            return knight_movement_valid(move, last_move);
+            return knight_movement_valid(move);
         case BISHOP:
-            return bishop_movement_valid(move, last_move);
+            return bishop_movement_valid(move);
         case QUEEN:
-            return queen_movement_valid(move, last_move);
+            return queen_movement_valid(move);
         case KING:
-            return king_movement_valid(move, last_move);
+            return king_movement_valid(move);
     }
     return false;
 }

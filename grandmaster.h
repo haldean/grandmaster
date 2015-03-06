@@ -88,8 +88,6 @@ parse_algebraic(
  * that there was no pieces between the start and end point (if applicable). It
  * does not check for other properties, like not moving into check. */
 bool
-is_movement_valid(
-    const struct move *move,
-    const struct move *last_move);
+is_movement_valid(const struct move *move);
 
 #endif

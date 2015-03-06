@@ -190,7 +190,7 @@ parse_algebraic(
     goto error;
 
 done:
-    if (!is_movement_valid(result, last_move)) {
+    if (!is_movement_valid(result)) {
         goto error;
     }
 
