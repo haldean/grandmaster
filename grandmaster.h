@@ -11,13 +11,13 @@ typedef enum {
     KNIGHT = 'n',
     BISHOP = 'b',
     QUEEN = 'q',
-    KING = 'k',
+    KING = 'k'
 } piece_type_t;
 const piece_type_t ALL_PIECES[] = { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING };
 
 typedef enum {
     WHITE = 'w',
-    BLACK = 'b',
+    BLACK = 'b'
 } color_t;
 
 #define opposite(x) ((x) == WHITE ? BLACK : WHITE)

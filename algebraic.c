@@ -24,14 +24,15 @@ parse_castle(
     out->end.file = is_kingside ? 6 : 2;
 }
 
-void
+int
 parse_pawn(
     const char *notation,
     const struct move *last_move,
     const struct piece piece,
     struct move *out)
 {
-    // TODO
+    /* TODO */
+    return 1;
 }
 
 void
@@ -50,12 +51,16 @@ parse_algebraic(
 
     input_len = strlen(notation);
 
-    // create result and fill in known fields
+    /* create result and fill in known fields */
     result = calloc(1, sizeof(struct move));
     result->player = opposite(last_move->player);
     result->algebraic = calloc(input_len, sizeof(char));
     memcpy(result->algebraic, notation, input_len);
     result->parent = last_move;
+
+    if (input_len < 2) {
+        goto error;
+    }
 
     is_kingside_castle =
         strncmp(notation, "0-0", 3) || strncmp(notation, "O-O", 3);
@@ -84,10 +89,16 @@ parse_algebraic(
         }
     }
 
+    /* strip the check/checkmate annotation, we don't need that to determine the
+     * nature of the move. */
+
     read_location(&notation[input_len - 2], &result->end);
 
     if (piece.piece_type == PAWN) {
-        parse_pawn(notation, last_move, piece, result);
+        if (!parse_pawn(notation, last_move, piece, result)) {
+            goto error;
+        }
+        goto done;
     }
 
 error:
