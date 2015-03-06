@@ -29,6 +29,7 @@ parse_pawn(
     const char *notation,
     const struct move *last_move,
     const struct piece piece,
+    const bool is_capture,
     struct move *out)
 {
     /* TODO */
@@ -95,7 +96,7 @@ parse_algebraic(
     read_location(&notation[input_len - 2], &result->end);
 
     if (piece.piece_type == PAWN) {
-        if (!parse_pawn(notation, last_move, piece, result)) {
+        if (!parse_pawn(notation, last_move, piece, is_capture, result)) {
             goto error;
         }
         goto done;
