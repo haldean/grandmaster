@@ -3,13 +3,30 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#define sign(x) (((x) > 0) - ((x) < 0))
+
 bool
 any_between(
     const struct position start,
     const struct position end,
     const struct board *board)
 {
-    /* TODO */
+    int rank_step;
+    int file_step;
+    int d_rank;
+    int d_file;
+    const struct piece *p;
+
+    rank_step = sign(end.rank - start.rank);
+    file_step = sign(end.file - start.file);
+
+    while (start.rank + d_rank != end.rank || start.file + d_file != end.file) {
+        p = &board->board[start.rank + d_rank][start.file + d_file];
+        if (p->piece_type != 0)
+            return true;
+        d_rank += rank_step;
+        d_file += file_step;
+    }
     return false;
 }
 
