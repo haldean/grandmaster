@@ -29,6 +29,9 @@ get_root(struct move *out)
     out->player = BLACK;
 
     out->post_board = calloc(1, sizeof(struct board));
+    out->post_board->available_castles =
+        WHITE_KINGSIDE | WHITE_QUEENSIDE | BLACK_KINGSIDE | BLACK_QUEENSIDE;
+
     out->post_board->board[0][0] = (struct piece) { .color = WHITE, .piece_type = ROOK };
     out->post_board->board[0][1] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
     out->post_board->board[0][2] = (struct piece) { .color = WHITE, .piece_type = BISHOP };

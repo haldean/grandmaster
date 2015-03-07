@@ -32,18 +32,22 @@ parse_castle(
     struct move *out)
 {
     bool is_kingside;
-    bool is_queenside;
+    castles_t castle_type;
     int rook_start_file;
     int rook_end_file;
 
-    is_kingside =
-        !strncmp(notation, "0-0", 5) || !strncmp(notation, "O-O", 5);
-    is_queenside =
-        !strncmp(notation, "0-0-0", 5) || !strncmp(notation, "O-O-O", 5);
-
-    if (!is_kingside && !is_queenside) {
-        return 0;
+    castle_type = 0;
+    if (!strncmp(notation, "0-0", 5) || !strncmp(notation, "O-O", 5)) {
+        castle_type = out->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
     }
+    else if (!strncmp(notation, "0-0-0", 5) || !strncmp(notation, "O-O-O", 5)) {
+        castle_type = out->player == WHITE ? WHITE_QUEENSIDE : BLACK_QUEENSIDE;
+    }
+
+    if (!castle_type)
+        return 0;
+    if (!(last_move->post_board->available_castles & castle_type))
+        return 0;
 
     if (out->player == BLACK) {
         out->start.rank = 7;
@@ -53,12 +57,24 @@ parse_castle(
         out->end.rank = 0;
     }
 
+    is_kingside = castle_type & (WHITE_KINGSIDE | BLACK_KINGSIDE);
     out->start.file = 4;
     out->end.file = is_kingside ? 6 : 2;
     rook_start_file = is_kingside ? 7 : 0;
     rook_end_file = is_kingside ? 5 : 3;
 
     out->post_board = calloc(1, sizeof(struct board));
+    /* update available castles */
+    out->post_board->available_castles =
+        last_move->post_board->available_castles;
+    if (out->player == BLACK) {
+        out->post_board->available_castles &=
+            ~(BLACK_KINGSIDE | BLACK_QUEENSIDE);
+    } else {
+        out->post_board->available_castles &=
+            ~(WHITE_KINGSIDE | WHITE_QUEENSIDE);
+    }
+
     memcpy(out->post_board, last_move->post_board, sizeof(struct board));
 
     /* move the king */
@@ -242,6 +258,17 @@ done:
         result->post_board->board[result->start.rank][result->start.file] =
             (struct piece) { .color = 0, .piece_type = 0 };
     }
+
+    if (piece.piece_type == ROOK || piece.piece_type == KING) {
+        if (result->player == WHITE) {
+            result->post_board->available_castles &=
+                ~(WHITE_KINGSIDE | WHITE_QUEENSIDE);
+        } else {
+            result->post_board->available_castles &=
+                ~(BLACK_KINGSIDE | BLACK_QUEENSIDE);
+        }
+    }
+
     *out = result;
     return;
 

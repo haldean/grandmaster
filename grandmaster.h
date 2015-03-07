@@ -33,6 +33,7 @@ typedef enum {
     QUEEN = 'Q',
     KING = 'K'
 } piece_type_t;
+
 #define ALL_PIECES ((piece_type_t[]) { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING })
 
 typedef enum {
@@ -41,6 +42,13 @@ typedef enum {
 } color_t;
 
 #define opposite(x) ((x) == WHITE ? BLACK : WHITE)
+
+typedef enum {
+    WHITE_KINGSIDE = 0x01,
+    WHITE_QUEENSIDE = 0x02,
+    BLACK_KINGSIDE = 0x04,
+    BLACK_QUEENSIDE = 0x08,
+} castles_t;
 
 struct piece {
     piece_type_t piece_type;
@@ -63,6 +71,7 @@ struct move {
 
 struct board {
     struct piece board[8][8];
+    uint8_t available_castles;
 };
 
 struct game {
