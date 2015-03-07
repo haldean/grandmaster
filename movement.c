@@ -20,6 +20,7 @@
 #include "grandmaster.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 #define sign(x) (((x) > 0) - ((x) < 0))
@@ -90,10 +91,8 @@ pawn_movement_valid(const struct move *move)
                 return false;
         }
     } else {
-        if (move->start.file != move->end.file)
-            return false;
         d_rank = move->end.rank - move->start.rank;
-        if (abs(d_rank) > 2)
+        if (abs(d_rank) > 2 || d_rank == 0)
             return false;
         if (move->player == WHITE) {
             if (d_rank < 0)
@@ -101,7 +100,7 @@ pawn_movement_valid(const struct move *move)
             if (d_rank == 2 && move->start.rank != 1)
                 return false;
         }
-        if (move->player == WHITE) {
+        if (move->player == BLACK) {
             if (d_rank > 0)
                 return false;
             if (d_rank == -2 && move->start.rank != 6)

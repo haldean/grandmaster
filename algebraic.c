@@ -21,6 +21,7 @@
 #include "gameio.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -83,7 +84,46 @@ parse_pawn(
     const bool is_capture,
     struct move *out)
 {
-    /* TODO */
+    color_t player;
+    struct board *b;
+
+    player = opposite(last_move->player);
+    b = last_move->post_board;
+
+    out->start.file = notation[0] - 'a';
+    out->end.file = notation[strlen(notation) - 2] - 'a';
+    out->end.rank = notation[strlen(notation) - 1] - '1';
+
+    if (is_capture) {
+        if (player == WHITE) {
+            out->start.rank = out->end.rank - 1;
+        } else {
+            out->start.rank = out->end.rank + 1;
+        }
+        return 1;
+    }
+
+    if (player == WHITE) {
+        if (out->end.rank == 3) {
+            if (b->board[2][out->start.file].color == WHITE) {
+                out->start.rank = 2;
+            } else {
+                out->start.rank = 1;
+            }
+        } else {
+            out->start.rank = out->end.rank - 1;
+        }
+    } else {
+        if (out->end.rank == 4) {
+            if (b->board[5][out->start.file].color == BLACK) {
+                out->start.rank = 5;
+            } else {
+                out->start.rank = 6;
+            }
+        } else {
+            out->start.rank = out->end.rank + 1;
+        }
+    }
     return 1;
 }
 
@@ -157,10 +197,10 @@ parse_algebraic(
     }
 
     if (piece.piece_type == PAWN) {
-        if (!parse_pawn(notation, last_move, piece, is_capture, result)) {
-            goto error;
+        if (parse_pawn(notation, last_move, piece, is_capture, result)) {
+            goto done;
         }
-        goto done;
+        goto error;
     }
 
     if (is_capture) {
