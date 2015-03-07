@@ -142,6 +142,10 @@ parse_pawn(
     return 1;
 }
 
+/* Finds a piece of the given color and type that has access to move->end,
+ * respecting any preexisting values in move->start. Populates the value at
+ * move->start with results if any are found. If none are found, move is
+ * entirely unchanged. */
 void
 find_piece_with_access(struct piece piece, struct move *move)
 {
