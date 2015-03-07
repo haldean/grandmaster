@@ -142,45 +142,6 @@ parse_pawn(
     return 1;
 }
 
-/* Finds a piece of the given color and type that has access to move->end,
- * respecting any preexisting values in move->start. Populates the value at
- * move->start with results if any are found. If none are found, move is
- * entirely unchanged. */
-void
-find_piece_with_access(struct piece piece, struct move *move)
-{
-    int8_t rank;
-    int8_t file;
-    struct move test_move;
-    struct piece *board_piece;
-
-    test_move.parent = move->parent;
-    test_move.end = move->end;
-
-    for (rank = 0; rank < 8; rank++) {
-        /* we could do this more efficiently by skipping the loop altogether in
-         * this case, but I like the succinctness of doing this all in one loop
-         * with no special cases. */
-        if (move->start.rank != -1 && move->start.rank != rank)
-            continue;
-        for (file = 0; file < 8; file++) {
-            if (move->start.file != -1 && move->start.file != file)
-                continue;
-            board_piece = &move->parent->post_board->board[rank][file];
-            if (board_piece->piece_type != piece.piece_type)
-                continue;
-            if (board_piece->color != piece.color)
-                continue;
-            test_move.start.rank = rank;
-            test_move.start.file = file;
-            if (is_movement_valid(&test_move)) {
-                move->start = test_move.start;
-                return;
-            }
-        }
-    }
-}
-
 void
 parse_algebraic(
     const char *input,

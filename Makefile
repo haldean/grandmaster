@@ -1,6 +1,6 @@
 CC=gcc
 COPTS=-ansi -std=c99 -pedantic -Wall -Wextra -g
-CSRC=algebraic.c gameio.c tree.c movement.c
+CSRC=algebraic.c gameio.c tree.c movement.c access.c kings.c
 STATICLIB=libgrandmaster.a
 
 $(STATICLIB): $(CSRC) *.h
