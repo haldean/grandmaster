@@ -20,12 +20,12 @@ build/%.o: src/%.c
 
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
-build/test_algebraic: $(STATICLIB) test/test_algebraic.c
-	$(CC) $(COPTS) test/test_algebraic.c -L build -lgrandmaster -o $@
+build/move_parser: $(STATICLIB) test/move_parser.c
+	$(CC) $(COPTS) test/move_parser.c -L build -lgrandmaster -o $@
 
-test: build/test_algebraic
+move_parser: build/move_parser
 
 clean:
 	rm -rf build
 
-.PHONY: objects clean test
+.PHONY: objects clean move_parser
