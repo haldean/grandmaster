@@ -20,11 +20,10 @@ build/%.o: src/%.c
 
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
-build/test_algebraic: $(STATICLIB) $(wildcard test/*.c)
-	$(CC) $(COPTS) test/*.c -L build -lgrandmaster -o $@
+build/test_algebraic: $(STATICLIB) test/test_algebraic.c
+	$(CC) $(COPTS) test/test_algebraic.c -L build -lgrandmaster -o $@
 
 test: build/test_algebraic
-	build/test_algebraic
 
 clean:
 	rm -rf build
