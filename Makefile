@@ -16,8 +16,11 @@ build/%.o: src/%.c
 	@[ -d build ] || mkdir build
 	$(CC) -c $(COPTS) -o $@ $<
 
-test: $(STATICLIB) $(wildcard test/*.c)
-	$(CC) $(COPTS) test_algebraic.c -L build -lgrandmaster -o test_algebraic
+build/test_algebraic: $(STATICLIB) $(wildcard test/*.c)
+	$(CC) $(COPTS) test/*.c -L build -lgrandmaster -o $@
+
+test: build/test_algebraic
+	build/test_algebraic
 
 clean:
 	rm -f build
