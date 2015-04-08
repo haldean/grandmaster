@@ -40,9 +40,10 @@ find_piece_with_access(struct piece piece, struct move *move)
             if (move->start.file != -1 && move->start.file != file)
                 continue;
             board_piece = &move->parent->post_board->board[rank][file];
-            if (board_piece->piece_type != piece.piece_type)
+            if (piece.piece_type != 0 &&
+                    board_piece->piece_type != piece.piece_type)
                 continue;
-            if (board_piece->color != piece.color)
+            if (piece.color != 0 && board_piece->color != piece.color)
                 continue;
             test_move.start.rank = rank;
             test_move.start.file = file;
