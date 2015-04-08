@@ -14,7 +14,11 @@ objects: $(objectfiles)
 
 build/%.o: src/%.c
 	@[ -d build ] || mkdir build
-	$(CC) -c $(COPTS) -o $@ $<
+	@# -MD builds makefiles with dependencies in-line with the object files. We
+	@# include them in the -include directive below
+	$(CC) -MD -c $(COPTS) -o $@ $<
+
+-include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
 build/test_algebraic: $(STATICLIB) $(wildcard test/*.c)
 	$(CC) $(COPTS) test/*.c -L build -lgrandmaster -o $@
