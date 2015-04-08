@@ -1,14 +1,25 @@
-CC=gcc
-COPTS=-ansi -std=c99 -pedantic -Wall -Wextra -g
-CSRC=algebraic.c gameio.c tree.c movement.c access.c kings.c
-STATICLIB=libgrandmaster.a
+CC := gcc
+AR := ar
+COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -g -Isrc
+HEADERS := $(wildcard src/*.h)
+STATICLIB := build/libgrandmaster.a
 
-$(STATICLIB): $(CSRC) *.h
-	$(CC) -c $(COPTS) -c $(CSRC)
-	$(AR) rvcs $(STATICLIB) *.o
+csrcs := $(wildcard src/*.c)
+objectfiles := $(patsubst src/%.c,build/%.o,$(csrcs))
 
-test: $(STATICLIB)
-	$(CC) $(COPTS) test_algebraic.c -L $(PWD) -lgrandmaster -o test_algebraic
+$(STATICLIB): $(objectfiles)
+	$(AR) rvcs $@ $^
+
+objects: $(objectfiles)
+
+build/%.o: src/%.c
+	@[ -d build ] || mkdir build
+	$(CC) -c $(COPTS) -o $@ $<
+
+test: $(STATICLIB) $(wildcard test/*.c)
+	$(CC) $(COPTS) test_algebraic.c -L build -lgrandmaster -o test_algebraic
 
 clean:
-	rm -f *.o $(STATICLIB)
+	rm -f build
+
+.PHONY: objects clean test
