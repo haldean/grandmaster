@@ -60,8 +60,10 @@ main(int argc, char *argv[])
         last = next;
     }
 
-    json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
-    printf("\n");
+    if (!print) {
+        json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
+        printf("\n");
+    }
 
     return 0;
 }
