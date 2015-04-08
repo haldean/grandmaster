@@ -27,6 +27,6 @@ test: build/test_algebraic
 	build/test_algebraic
 
 clean:
-	rm -f build
+	rm -rf build
 
 .PHONY: objects clean test
