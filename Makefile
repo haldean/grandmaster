@@ -1,16 +1,15 @@
 CC := gcc
 AR := ar
-COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -g -Iinclude
+COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -Iinclude -Os \
+	$(shell pkg-config --cflags jansson)
+LDOPTS := $(shell pkg-config --libs jansson)
 HEADERS := $(wildcard src/*.h)
 STATICLIB := build/libgrandmaster.a
 
-csrcs := $(wildcard src/*.c)
-objectfiles := $(patsubst src/%.c,build/%.o,$(csrcs))
+objectfiles := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c))
 
 $(STATICLIB): $(objectfiles)
 	$(AR) rvcs $@ $^
-
-objects: $(objectfiles)
 
 build/%.o: src/%.c
 	@mkdir -p build
@@ -21,7 +20,7 @@ build/%.o: src/%.c
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
 build/move_parser: $(STATICLIB) test/move_parser.c
-	$(CC) $(COPTS) test/move_parser.c -L build -lgrandmaster -o $@
+	$(CC) $(COPTS) test/move_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
 
 move_parser: build/move_parser
 

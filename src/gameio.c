@@ -78,3 +78,9 @@ print_move(struct move *move)
         printf("\n");
     }
 }
+
+json_t *
+move_to_json(struct move *move)
+{
+    return NULL;
+}

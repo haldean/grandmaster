@@ -21,11 +21,15 @@
 #define __GAMEIO_H__
 
 #include "grandmaster.h"
+#include "jansson.h"
 
 void
 read_location(const char *str, struct position *result);
 
 void
 print_move(struct move *);
+
+json_t *
+move_to_json(struct move *);
 
 #endif
