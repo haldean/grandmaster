@@ -18,6 +18,7 @@
  */
 
 #include "gameio.h"
+#include "jansson.h"
 
 #include <stdio.h>
 
@@ -80,7 +81,78 @@ print_move(struct move *move)
 }
 
 json_t *
+board_to_json(struct board *board)
+{
+    int rank;
+    int file;
+    struct piece *p;
+    json_t *board_root;
+    json_t *board_array;
+    json_t *rank_array;
+    json_t *available_castles;
+    json_t *temp;
+    char piece_name[3];
+
+    board_root = json_object();
+    board_array = json_array();
+
+    for (rank = 0; rank < 8; rank++) {
+        rank_array = json_array();
+        for (file = 0; file < 8; file++) {
+            p = &board->board[rank][file];
+            if (p->piece_type == 0) {
+                temp = json_null();
+            } else {
+                snprintf(
+                    piece_name, 3, "%c%c",
+                    (char) p->color, (char) p->piece_type);
+                temp = json_string(piece_name);
+            }
+            json_array_append_new(rank_array, temp);
+        }
+        json_array_append_new(board_array, rank_array);
+    }
+
+    json_object_set_new_nocheck(board_root, "board", board_array);
+
+    available_castles = json_integer(board->available_castles);
+    json_object_set_new_nocheck(
+        board_root, "available_castles", available_castles);
+
+    return board_root;
+}
+
+json_t *
 move_to_json(struct move *move)
 {
-    return NULL;
+    json_t *root;
+    json_t *temp;
+
+    root = json_object();
+
+    if (move->algebraic != NULL) {
+        temp = json_string(move->algebraic);
+    } else {
+        temp = json_null();
+    }
+    json_object_set_new_nocheck(root, "algebraic", temp);
+
+    if (move->post_board != NULL) {
+        temp = board_to_json(move->post_board);
+    } else {
+        temp = json_null();
+    }
+    json_object_set_new_nocheck(root, "board", temp);
+
+    temp = json_integer(move->start.rank);
+    json_object_set_new_nocheck(root, "start_rank", temp);
+    temp = json_integer(move->start.file);
+    json_object_set_new_nocheck(root, "start_file", temp);
+
+    temp = json_integer(move->end.rank);
+    json_object_set_new_nocheck(root, "end_rank", temp);
+    temp = json_integer(move->end.file);
+    json_object_set_new_nocheck(root, "end_file", temp);
+
+    return root;
 }

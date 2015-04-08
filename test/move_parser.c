@@ -20,6 +20,7 @@
 #include "grandmaster.h"
 #include "gameio.h"
 
+#include <jansson.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -30,10 +31,19 @@ main(int argc, char *argv[])
     struct move *next;
     int i;
     char *notation;
+    bool print = false;
+    json_t *results;
+
+    if (argc && argv[0][0] == '.') {
+        print = true;
+        argv++;
+    }
+    results = json_array();
 
     last = calloc(1, sizeof(struct move));
     get_root(last);
-    print_move(last);
+    if (print)
+        print_move(last);
 
     for (i = 1; i < argc; i++) {
         notation = argv[i];
@@ -42,10 +52,16 @@ main(int argc, char *argv[])
             printf("FAILED: parse_algebraic returned error on %s\n", notation);
             return 1;
         }
-        printf("\n");
-        print_move(next);
+        if (print) {
+            printf("\n");
+            print_move(next);
+        }
+        json_array_append_new(results, move_to_json(next));
         last = next;
     }
+
+    json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
+    printf("\n");
 
     return 0;
 }
