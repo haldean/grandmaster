@@ -1,6 +1,6 @@
 CC := gcc
 AR := ar
-COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -g -Isrc
+COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -g -Iinclude
 HEADERS := $(wildcard src/*.h)
 STATICLIB := build/libgrandmaster.a
 
