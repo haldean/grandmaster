@@ -22,9 +22,10 @@ build/%.o: src/%.c
 build/move_parser: $(STATICLIB) test/move_parser.c
 	$(CC) $(COPTS) test/move_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
 
-move_parser: build/move_parser
+test: test/test_rules.py build/move_parser
+	python test/test_rules.py
 
 clean:
 	rm -rf build
 
-.PHONY: objects clean move_parser
+.PHONY: objects clean move_parser test
