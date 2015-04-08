@@ -13,7 +13,7 @@ $(STATICLIB): $(objectfiles)
 objects: $(objectfiles)
 
 build/%.o: src/%.c
-	@[ -d build ] || mkdir build
+	@mkdir -p build
 	@# -MD builds makefiles with dependencies in-line with the object files. We
 	@# include them in the -include directive below
 	$(CC) -MD -c $(COPTS) -o $@ $<
