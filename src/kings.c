@@ -22,6 +22,7 @@
 bool
 in_check(const struct move *move)
 {
+    (void)(move); /* suppress unused warning */
     // TODO: implement this
     return false;
 }
