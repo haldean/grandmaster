@@ -1,0 +1,15 @@
+grandmaster is a lazy enumerator of the chess game tree.
+
+This can be more useful than it sounds. The goal for the grandmaster project is
+to be used to store the state of many games at once and allow for easy analysis
+of these games. It stores games as pointers into the chess game tree, lazily
+adding nodes to the tree as needed. In a sense, it is the git branching
+model but for chess games. This allows for easy rewinding or forking off of
+games, or speculative explorations of many branches of the game. It may also be
+useful for chess engines, although having never implemented a chess engine I
+can't be sure.
+
+Right now, the status of grandmaster is that it parses algebraic notation
+poorly. Many features here are missing, and the parser is probably more
+permissive than it should be. There's also a basic PGN parser. A test framework
+is half-done; you can run the half that's done by running "make test".
