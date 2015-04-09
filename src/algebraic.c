@@ -35,6 +35,12 @@
 #  define alg_fail(...) do { goto error; } while (0);
 #endif
 
+inline bool
+is_valid_position(const struct position pos)
+{
+    return 0 <= pos.rank && pos.rank < 8 && 0 <= pos.file && pos.file < 8;
+}
+
 int
 parse_castle(
     const char *notation,
@@ -116,8 +122,13 @@ parse_pawn(
     b = last_move->post_board;
 
     out->start.file = notation[0] - 'a';
+    out->start.rank = 0;
     out->end.file = notation[strlen(notation) - 2] - 'a';
     out->end.rank = notation[strlen(notation) - 1] - '1';
+    if (!is_valid_position(out->start))
+        return 0;
+    if (!is_valid_position(out->end))
+        return 0;
 
     if (is_capture) {
         if (player == WHITE) {
