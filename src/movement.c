@@ -158,7 +158,7 @@ castle_movement_valid(const struct move *move)
     castles_t castle_type;
 
     castle_type = 0;
-    if (!strncmp(move->algebraic, "0-0", 5) || !strncmp(move->algebraic, "O-O", 5)) {
+    if (!strncmp(move->algebraic, "0-0", 3) || !strncmp(move->algebraic, "O-O", 3)) {
         castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
     }
     else if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
