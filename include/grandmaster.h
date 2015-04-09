@@ -47,7 +47,7 @@ typedef enum {
     WHITE_KINGSIDE = 0x01,
     WHITE_QUEENSIDE = 0x02,
     BLACK_KINGSIDE = 0x04,
-    BLACK_QUEENSIDE = 0x08,
+    BLACK_QUEENSIDE = 0x08
 } castles_t;
 
 struct piece {

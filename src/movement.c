@@ -170,8 +170,8 @@ castle_movement_valid(const struct move *move)
     if (!(move->parent->post_board->available_castles & castle_type))
         return false;
 
-    // TODO: check nothing between rook and endpoint, king and endpoint
-    // TODO: check that the king isn't in check in the intermediate square
+    /* TODO: check nothing between rook and endpoint, king and endpoint */
+    /* TODO: check that the king isn't in check in the intermediate square */
     return true;
 }
 
@@ -187,7 +187,7 @@ king_movement_valid(const struct move *move)
 }
 
 bool
-is_movement_valid(const struct move *move)
+is_movement_valid(const struct move *const move)
 {
     struct piece *piece;
     struct piece *captured;
