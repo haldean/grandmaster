@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import unittest
@@ -5,14 +6,17 @@ import unittest
 move_parser = "build/move_parser"
 
 class RulesTest(unittest.TestCase):
-    def setup(self):
+    def setUp(self):
         if not os.path.exists(move_parser):
-            raise Exception("before running tests make the move_parser target")
+            raise Exception("run tests by running `make test`")
 
     def ensure_valid(self, *move_list):
         args = [move_parser]
         args.extend(move_list)
         res = subprocess.check_output(args)
+        moves = json.loads(res)
+        self.assertEqual(len(move_list), len(moves))
+        return moves
 
     def ensure_invalid(self, *move_list):
         args = [move_parser]
@@ -27,54 +31,14 @@ class RulesTest(unittest.TestCase):
         self.ensure_valid("a4")
         self.ensure_valid("a3")
         self.ensure_invalid("a5")
-#         b = chess.Board.new()
-#         m = chess.Move.on_board((1, 0), (3, 0), b)
-#         self.assertTrue(m.is_valid(b))
-#         m = chess.Move.on_board((1, 0), (1, 1), b)
-#         self.assertFalse(m.is_valid(b))
-#         m = chess.Move.on_board((2, 0), (2, 1), b)
-#         self.assertFalse(m.is_valid(b))
-#         m = chess.Move.on_board((2, 0), (4, 0), b)
-#         self.assertFalse(m.is_valid(b))
-#         m = chess.Move.on_board((1, 0), (4, 0), b)
-#         self.assertFalse(m.is_valid(b))
-# 
-#         board = """
-#         bR bN bB bQ bK bB bN bR
-#         bp __ bp bp __ bp bp bp
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ bp __ __ __ __ __ __
-#         wp __ __ __ bp __ __ __
-#         __ wp wp wp wp wp wp wp
-#         wR wN wB wQ wK wB wN wR
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((2, 0), (3, 1), b)
-#         self.assertTrue(m.is_valid(b))
-#         m = chess.Move.on_board((1, 1), (3, 1), b)
-#         self.assertFalse(m.is_valid(b))
-#         m = chess.Move.on_board((1, 4), (3, 4), b)
-#         self.assertFalse(m.is_valid(b))
-#         m = chess.Move.on_board((0, 0), (1, 0), b)
-#         self.assertTrue(m.is_valid(b))
-#         m = chess.Move.on_board((0, 0), (0, 4), b)
-#         self.assertFalse(m.is_valid(b))
-# 
-#     def testBishop(self):
-#         board = """
-#         bR bN bB bQ bK bB bN bR
-#         bp __ bp bp __ bp bp bp
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ bp __ __ __ __ __ __
-#         __ __ __ __ bp __ __ __
-#         __ __ wp wp wp wp wp wp
-#         wR wN wB wQ wK wB wN wR
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((0, 2), (2, 0), b)
-#         self.assertTrue(m.is_valid(b))
+
+        self.ensure_valid("a4", "b5")
+        self.ensure_valid("a4", "b5", "axb5")
+        self.ensure_invalid("a4", "c5", "axb5")
+
+    def testBishop(self):
+        self.ensure_valid("a4", "b5", "a5", "Ba6")
+        self.ensure_invalid("a4", "b5", "a5", "b6", "a6", "Ba6")
 # 
 #     def testCastle(self):
 #         board = """
