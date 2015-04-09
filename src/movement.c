@@ -157,6 +157,9 @@ castle_movement_valid(const struct move *move)
 {
     castles_t castle_type;
 
+    if (move->algebraic == NULL)
+        return false;
+
     castle_type = 0;
     if (!strncmp(move->algebraic, "0-0", 3) || !strncmp(move->algebraic, "O-O", 3)) {
         castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
@@ -187,7 +190,7 @@ king_movement_valid(const struct move *move)
 }
 
 bool
-is_movement_valid(const struct move *const move)
+is_movement_valid(const struct move *move)
 {
     struct piece *piece;
     struct piece *captured;

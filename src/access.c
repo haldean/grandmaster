@@ -19,6 +19,8 @@
 
 #include "grandmaster.h"
 
+#include <string.h>
+
 void
 find_piece_with_access(struct piece piece, struct move *move)
 {
@@ -27,6 +29,7 @@ find_piece_with_access(struct piece piece, struct move *move)
     struct move test_move;
     struct piece *board_piece;
 
+    memset(&test_move, 0x00, sizeof(struct move));
     test_move.parent = move->parent;
     test_move.end = move->end;
 
