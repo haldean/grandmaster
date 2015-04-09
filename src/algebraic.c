@@ -169,15 +169,15 @@ parse_algebraic(
 
     /* we modify the notation later to ease parsing, so we copy it here to avoid
      * modifying our input. */
-    input_len = strlen(input);
+    input_len = strlen(input) + 1;
     notation = calloc(input_len, sizeof(char));
-    memcpy(notation, input, input_len);
+    strncpy(notation, input, input_len);
 
     /* create result and fill in known fields */
     result = calloc(1, sizeof(struct move));
     result->player = opposite(last_move->player);
     result->algebraic = calloc(input_len, sizeof(char));
-    memcpy(result->algebraic, notation, input_len);
+    strncpy(result->algebraic, notation, input_len);
     result->parent = last_move;
 
     if (input_len < 2) {
