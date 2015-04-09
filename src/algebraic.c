@@ -159,6 +159,7 @@ parse_algebraic(
     struct move **out)
 {
     char *notation;
+    char *notation_head;
     bool is_capture;
     size_t capture_index; /* only set if is_capture */
     size_t input_len;
@@ -171,6 +172,7 @@ parse_algebraic(
      * modifying our input. */
     input_len = strlen(input) + 1;
     notation = calloc(input_len, sizeof(char));
+    notation_head = notation;
     strncpy(notation, input, input_len);
 
     /* create result and fill in known fields */
@@ -184,6 +186,8 @@ parse_algebraic(
         alg_fail("input too short");
     }
     if (parse_castle(notation, last_move, result)) {
+        piece.piece_type = KING;
+        piece.color = result->player;
         goto done;
     }
 
@@ -281,11 +285,13 @@ done:
         }
     }
 
+    free(notation_head);
     *out = result;
     return;
 
 error:
-    free(result);
+    free(notation_head);
+    free_move(result);
     *out = NULL;
     return;
 }

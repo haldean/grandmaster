@@ -110,4 +110,12 @@ in_check(const struct move *move);
 void
 find_piece_with_access(struct piece piece, struct move *move);
 
+/* Free a move struct, leaving its parent move untouched. */
+void
+free_move(struct move *move);
+
+/* Free a move struct and all of its parents. */
+void
+free_move_tree(struct move *move);
+
 #endif

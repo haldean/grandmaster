@@ -47,5 +47,11 @@ main()
     result = move_to_json(last);
     json_dumpf(result, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(4));
     printf("\n");
+
+    /* dealloc at end of process so we can run things through valgrind, even
+     * though it's otherwise unnecessary */
+    json_decref(result);
+    free_move_tree(last);
+
     return 0;
 }

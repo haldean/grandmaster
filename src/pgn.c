@@ -27,9 +27,9 @@
         printf("pgn_fail: "); \
         printf(__VA_ARGS__); \
         printf("\n"); \
-        return NULL; } while (0);
+        goto error; } while (0);
 #else
-#  define pgn_fail(...) do { return NULL; } while (0);
+#  define pgn_fail(...) do { goto error; } while (0);
 #endif
 
 int
@@ -140,4 +140,9 @@ parse_pgn(const char *pgn, int n)
     }
 
     return last;
+
+error:
+    if (last != NULL)
+        free_move_tree(last);
+    return NULL;
 }

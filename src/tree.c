@@ -65,3 +65,22 @@ get_root(struct move *out)
     out->post_board->board[7][6] = (struct piece) { .color = BLACK, .piece_type = KNIGHT };
     out->post_board->board[7][7] = (struct piece) { .color = BLACK, .piece_type = ROOK };
 }
+
+void
+free_move_tree(struct move *move)
+{
+    if (move->parent != NULL)
+        /* explicitly remove const qualifier here. */
+        free_move_tree((struct move *) move->parent);
+    free_move(move);
+}
+
+void
+free_move(struct move *move)
+{
+    if (move->post_board != NULL)
+        free(move->post_board);
+    if (move->algebraic != NULL)
+        free(move->algebraic);
+    free(move);
+}
