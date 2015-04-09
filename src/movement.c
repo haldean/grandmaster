@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define sign(x) (((x) > 0) - ((x) < 0))
 
@@ -152,6 +153,29 @@ queen_movement_valid(const struct move *move)
 }
 
 bool
+castle_movement_valid(const struct move *move)
+{
+    castles_t castle_type;
+
+    castle_type = 0;
+    if (!strncmp(move->algebraic, "0-0", 5) || !strncmp(move->algebraic, "O-O", 5)) {
+        castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
+    }
+    else if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
+        castle_type = move->player == WHITE ? WHITE_QUEENSIDE : BLACK_QUEENSIDE;
+    }
+    if (castle_type == 0)
+        return false;
+
+    if (!(move->parent->post_board->available_castles & castle_type))
+        return false;
+
+    // TODO: check nothing between rook and endpoint, king and endpoint
+    // TODO: check that the king isn't in check in the intermediate square
+    return true;
+}
+
+bool
 king_movement_valid(const struct move *move)
 {
     int d_rank;
@@ -159,7 +183,7 @@ king_movement_valid(const struct move *move)
 
     d_rank = abs(move->start.rank - move->end.rank);
     d_file = abs(move->start.file - move->end.file);
-    return d_rank <= 1 && d_file <= 1;
+    return (d_rank <= 1 && d_file <= 1) || castle_movement_valid(move);
 }
 
 bool
