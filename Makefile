@@ -15,9 +15,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-CC := gcc
-AR := ar
-COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -Iinclude -Os -DDEBUG \
+COPTS := -ansi -pedantic -Werror -Wall -Wextra -Iinclude -ggdb -O1 -DDEBUG \
 	$(shell pkg-config --cflags jansson)
 LDOPTS := $(shell pkg-config --libs jansson)
 HEADERS := $(wildcard src/*.h)
