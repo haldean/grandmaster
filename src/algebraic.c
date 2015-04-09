@@ -25,6 +25,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef DEBUG
+#  define alg_fail(...) do {\
+        printf("alg_fail: "); \
+        printf(__VA_ARGS__); \
+        printf("\n"); \
+        goto error; } while (0);
+#else
+#  define alg_fail(...) do { goto error; } while (0);
+#endif
+
 int
 parse_castle(
     const char *notation,
@@ -171,7 +181,7 @@ parse_algebraic(
     result->parent = last_move;
 
     if (input_len < 2) {
-        goto error;
+        alg_fail("input too short");
     }
     if (parse_castle(notation, last_move, result)) {
         goto done;
@@ -208,14 +218,14 @@ parse_algebraic(
     result->end.file = -1;
     read_location(&notation[strlen(notation) - 2], &result->end);
     if (result->end.rank == -1 || result->end.file == -1) {
-        goto error;
+        alg_fail("end location didn't parse");
     }
 
     if (piece.piece_type == PAWN) {
         if (parse_pawn(notation, last_move, is_capture, result)) {
             goto done;
         }
-        goto error;
+        alg_fail("failed to parse pawn movement");
     }
 
     if (is_capture) {
@@ -239,17 +249,17 @@ parse_algebraic(
         } else if ('1' <= notation[0] && notation[0] <= '8') {
             result->start.rank = notation[0] - '1';
         } else {
-            goto error;
+            alg_fail("invalid disambig char %c", notation[0]);
         }
     }
 
     find_piece_with_access(piece, result);
     if (result->start.rank == -1 || result->end.rank == -1)
-        goto error;
+        alg_fail("no pieces with access to end location");
 
 done:
     if (!is_movement_valid(result)) {
-        goto error;
+        alg_fail("movement wasn't valid");
     }
 
     if (result->post_board == NULL) {

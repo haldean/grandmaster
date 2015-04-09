@@ -23,7 +23,11 @@
 #define MAX_NOTATION_LEN 63
 
 #ifdef DEBUG
-#  define pgn_fail(...) do { printf(__VA_ARGS__); printf("\n"); return NULL; } while (0);
+#  define pgn_fail(...) do {\
+        printf("pgn_fail: "); \
+        printf(__VA_ARGS__); \
+        printf("\n"); \
+        return NULL; } while (0);
 #else
 #  define pgn_fail(...) do { return NULL; } while (0);
 #endif
