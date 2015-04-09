@@ -13,3 +13,6 @@ Right now, the status of grandmaster is that it parses algebraic notation
 poorly. Many features here are missing, and the parser is probably more
 permissive than it should be. There's also a basic PGN parser. A test framework
 is half-done; you can run the half that's done by running "make test".
+
+grandmaster is distributed under the GNU GPLv2. You can find the full text of
+this license in the LICENSE file in this repository.
