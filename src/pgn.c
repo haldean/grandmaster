@@ -58,6 +58,12 @@ read_ply(const char *pgn, const int n, int *const i, char *const notation)
 int
 read_termination(const char *pgn, const int n, int i)
 {
+    // first consume all whitespace
+    while ((pgn[i] == '\n' || pgn[i] == ' ') && i < n)
+        i++;
+    if (i == n)
+        return 1;
+
     if (n - i - 1 < 3)
         return 1;
     if (strncmp(&pgn[i], "1-0", 3) == 0)
