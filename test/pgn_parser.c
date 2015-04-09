@@ -1,5 +1,5 @@
 /*
- * gameio.h: tools for saving and loading game data
+ * pgn_parser.c: parser tool for the PGN data interchange format
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,22 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GAMEIO_H__
-#define __GAMEIO_H__
+#include <grandmaster.h>
+#include <gameio.h>
+#include <jansson.h>
+#include <stdio.h>
 
-#include "grandmaster.h"
-#include "jansson.h"
+#define MAX_PGN_LEN 4096
 
-void
-read_location(const char *str, struct position *result);
+int
+main()
+{
+    struct move *last;
+    size_t size;
+    char pgn[MAX_PGN_LEN];
+    json_t *result;
 
-struct move *
-parse_pgn(const char *pgn, int n);
+    size = fread(pgn, 1, MAX_PGN_LEN, stdin);
+    if (!feof(stdin)) {
+        printf("max input file size is 4K.\n");
+        return 1;
+    }
 
-void
-print_move(struct move *);
+    last = parse_pgn(pgn, size);
+    if (last == NULL) {
+        printf("failed to parse PGN.\n");
+        return 1;
+    }
 
-json_t *
-move_to_json(struct move *);
-
-#endif
+    result = move_to_json(last);
+    json_dumpf(result, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(4));
+    printf("\n");
+    return 0;
+}

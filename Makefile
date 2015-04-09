@@ -17,7 +17,7 @@
 
 CC := gcc
 AR := ar
-COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -Iinclude -Os \
+COPTS := -ansi -std=c99 -pedantic -Wall -Wextra -Iinclude -Os -DDEBUG \
 	$(shell pkg-config --cflags jansson)
 LDOPTS := $(shell pkg-config --libs jansson)
 HEADERS := $(wildcard src/*.h)
@@ -38,6 +38,9 @@ build/%.o: src/%.c
 
 build/move_parser: $(STATICLIB) test/move_parser.c
 	$(CC) $(COPTS) test/move_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
+
+build/pgn_parser: $(STATICLIB) test/pgn_parser.c
+	$(CC) $(COPTS) test/pgn_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
 
 test: test/test_rules.py build/move_parser
 	python test/test_rules.py
