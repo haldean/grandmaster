@@ -115,10 +115,14 @@ pawn_movement_valid(const struct move *move)
 bool
 rook_movement_valid(const struct move *move)
 {
-    if (any_between(move->start, move->end, move->parent->post_board))
+    int rank_constant;
+    int file_constant;
+
+    rank_constant = (move->start.rank == move->end.rank);
+    file_constant = (move->start.file == move->end.file);
+    if (!(rank_constant ^ file_constant))
         return false;
-    return move->start.rank == move->end.rank
-        || move->start.file == move->end.file;
+    return !any_between(move->start, move->end, move->parent->post_board);
 }
 
 bool
