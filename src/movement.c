@@ -61,8 +61,6 @@ pawn_movement_valid(const struct move *move)
     struct piece *last_move_piece;
     int d_rank;
 
-    if (any_between(move->start, move->end, move->parent->post_board))
-        return false;
     b = move->parent->post_board;
     is_capture = b->board[move->end.rank][move->end.file].piece_type != 0;
 
@@ -108,6 +106,9 @@ pawn_movement_valid(const struct move *move)
                 return false;
         }
     }
+
+    if (any_between(move->start, move->end, move->parent->post_board))
+        return false;
     return true;
 }
 
