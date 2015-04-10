@@ -50,7 +50,7 @@ player_str(color_t player)
 }
 
 void
-print_move(struct move *move)
+print_move(const struct move *move)
 {
     int rank;
     int file;
@@ -81,11 +81,11 @@ print_move(struct move *move)
 }
 
 json_t *
-board_to_json(struct board *board)
+board_to_json(const struct board *board)
 {
     int rank;
     int file;
-    struct piece *p;
+    const struct piece *p;
     json_t *board_root;
     json_t *board_array;
     json_t *rank_array;
@@ -123,7 +123,7 @@ board_to_json(struct board *board)
 }
 
 json_t *
-move_to_json(struct move *move)
+move_to_json(const struct move *move)
 {
     json_t *root;
     json_t *temp;

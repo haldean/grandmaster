@@ -29,10 +29,16 @@ read_location(const char *str, struct position *result);
 struct move *
 parse_pgn(const char *pgn, int n);
 
+struct move *
+parse_fen(const char *fen, int n);
+
 void
-print_move(struct move *);
+print_move(const struct move *);
 
 json_t *
-move_to_json(struct move *);
+move_to_json(const struct move *);
+
+json_t *
+board_to_json(const struct board *);
 
 #endif

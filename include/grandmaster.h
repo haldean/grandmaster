@@ -118,4 +118,8 @@ free_move(struct move *move);
 void
 free_move_tree(struct move *move);
 
+/* Returns true if the two boards are equivalent. */
+bool
+boards_equal(struct board *, struct board *);
+
 #endif
