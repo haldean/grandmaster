@@ -82,7 +82,7 @@ parse_fen(const char *fen, int n)
             if (i >= n)
                 fen_fail("ran out of characters");
             if ('1' <= fen[i] && fen[i] <= '9')
-                file += fen[i++] - '0';
+                file += fen[i++] - '1';
             else if (!load_piece(fen[i++], &board->board[rank][file]))
                 fen_fail("couldn't load piece %c", fen[i-1]);
         }
