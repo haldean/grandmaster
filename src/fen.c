@@ -114,6 +114,8 @@ parse_fen(const char *fen, int n)
             board->available_castles |= WHITE_QUEENSIDE;
         else if (fen[i] == 'q')
             board->available_castles |= BLACK_QUEENSIDE;
+        else if (fen[i] == '-')
+            ; /* do nothing */
         else
             fen_fail("unknown castle type %c", fen[i]);
         i++;
