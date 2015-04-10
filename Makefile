@@ -26,6 +26,8 @@ objectfiles := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c))
 $(STATICLIB): $(objectfiles)
 	$(AR) rvcs $@ $^
 
+dist: $(STATICLIB)
+
 build/%.o: src/%.c
 	@mkdir -p build
 	@# -MD builds makefiles with dependencies in-line with the object files. We
@@ -34,16 +36,14 @@ build/%.o: src/%.c
 
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
-build/move_parser: $(STATICLIB) test/move_parser.c
-	$(CC) $(COPTS) test/move_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
+testbin/%: test/%.c dist
+	@mkdir -p testbin
+	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
 
-build/pgn_parser: $(STATICLIB) test/pgn_parser.c
-	$(CC) $(COPTS) test/pgn_parser.c $(LDOPTS) -Lbuild -lgrandmaster -o $@
-
-test: test/test_rules.py build/move_parser
+test: test/test_rules.py testbin/move_parser
 	python test/test_rules.py
 
 clean:
-	rm -rf build
+	rm -rf build testbin
 
-.PHONY: objects clean move_parser test
+.PHONY: dist clean move_parser test
