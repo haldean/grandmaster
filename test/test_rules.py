@@ -20,7 +20,7 @@ import os
 import subprocess
 import unittest
 
-move_parser = "build/move_parser"
+move_parser = "testbin/move_parser"
 
 class RulesTest(unittest.TestCase):
     def setUp(self):
