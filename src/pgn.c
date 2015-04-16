@@ -78,7 +78,7 @@ read_termination(const char *pgn, const int n, int i)
 }
 
 struct move *
-parse_pgn(const char *pgn, int n)
+parse_pgn(const char *pgn, int n, struct move *start)
 {
     struct move *last;
     struct move *next;
@@ -86,8 +86,12 @@ parse_pgn(const char *pgn, int n)
     int i;
     int err;
 
-    last = calloc(1, sizeof(struct move));
-    get_root(last);
+    if (start == NULL) {
+        last = calloc(1, sizeof(struct move));
+        get_root(last);
+    } else {
+        last = start;
+    }
 
     for (i = 0; i < n; i++) {
         // strip out whitespace and metadata before reading the move

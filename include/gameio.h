@@ -26,8 +26,10 @@
 void
 read_location(const char *str, struct position *result);
 
+/* Reads PGN data and returns a hierarchy of moves starting at the given start
+ * move. If the provided start move is NULL, a new root node is created. */
 struct move *
-parse_pgn(const char *pgn, int n);
+parse_pgn(const char *pgn, int n, struct move *start);
 
 struct move *
 parse_fen(const char *fen, int n);
