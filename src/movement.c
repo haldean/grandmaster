@@ -26,6 +26,16 @@
 
 #define sign(x) (((x) > 0) - ((x) < 0))
 
+#ifdef DEBUG
+#  define move_fail(...) do {\
+        printf("move_fail: "); \
+        printf(__VA_ARGS__); \
+        printf("\n"); \
+        return false; } while (0);
+#else
+#  define move_fail(...) do { return false; } while (0);
+#endif
+
 bool
 any_between(
     const struct position start,
@@ -163,20 +173,20 @@ castle_movement_valid(const struct move *move)
     castles_t castle_type;
 
     if (move->algebraic == NULL)
-        return false;
+        move_fail("no algebraic notation on move");
 
     castle_type = 0;
-    if (!strncmp(move->algebraic, "0-0", 3) || !strncmp(move->algebraic, "O-O", 3)) {
-        castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
-    }
-    else if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
+    if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
         castle_type = move->player == WHITE ? WHITE_QUEENSIDE : BLACK_QUEENSIDE;
     }
+    else if (!strncmp(move->algebraic, "0-0", 3) || !strncmp(move->algebraic, "O-O", 3)) {
+        castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
+    }
     if (castle_type == 0)
-        return false;
+        move_fail("castle type doesn't match consts");
 
     if (!(move->parent->post_board->available_castles & castle_type))
-        return false;
+        move_fail("castle type not available");
 
     /* TODO: check nothing between rook and endpoint, king and endpoint */
     /* TODO: check that the king isn't in check in the intermediate square */
