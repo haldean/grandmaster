@@ -24,6 +24,7 @@
 #include <string.h>
 
 #define MAX_NOTATION_LEN 63
+#define MAX_FEN_LEN 90
 
 #ifdef DEBUG
 #  define fen_fail(...) do {\
@@ -34,6 +35,66 @@
 #else
 #  define fen_fail(...) do { goto error; } while (0);
 #endif
+
+char *
+move_to_fen(const struct move *move)
+{
+    char *fen;
+    struct board *board = move->post_board;
+    struct piece *p;
+    int i;
+    int rank;
+    int file;
+    int count;
+
+    fen = calloc(MAX_FEN_LEN, sizeof(char));
+
+    i = 0;
+    for (rank = 7; rank >= 0; rank--) {
+        for (file = 0; file < 8; file++) {
+            count = 0;
+            while (file < 8 && board->board[rank][file].piece_type == 0) {
+                count++;
+                file++;
+            }
+            if (count) {
+                fen[i++] = count + '0';
+            }
+            if (file >= 8) {
+                break;
+            }
+            p = &board->board[rank][file];
+            fen[i++] = p->color == WHITE
+                ? toupper(p->piece_type) : tolower(p->piece_type);
+        }
+        if (rank > 0)
+            fen[i++] = '/';
+    }
+
+    fen[i++] = ' ';
+    fen[i++] = opposite(move->player);
+
+    fen[i++] = ' ';
+    if (!board->available_castles)
+        fen[i++] = '-';
+    if (board->available_castles & WHITE_KINGSIDE)
+        fen[i++] = 'K';
+    if (board->available_castles & WHITE_QUEENSIDE)
+        fen[i++] = 'Q';
+    if (board->available_castles & BLACK_KINGSIDE)
+        fen[i++] = 'k';
+    if (board->available_castles & BLACK_QUEENSIDE)
+        fen[i++] = 'q';
+
+    fen[i++] = ' ';
+    fen[i++] = '-';
+    fen[i++] = ' ';
+    fen[i++] = '-';
+    fen[i++] = ' ';
+    fen[i++] = '-';
+
+    return fen;
+}
 
 int
 load_piece(const char piece, struct piece *board)

@@ -43,4 +43,7 @@ move_to_json(const struct move *);
 json_t *
 board_to_json(const struct board *);
 
+char *
+move_to_fen(const struct move *);
+
 #endif
