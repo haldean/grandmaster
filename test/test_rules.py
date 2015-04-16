@@ -21,6 +21,7 @@ import subprocess
 import unittest
 
 move_parser = "testbin/move_parser"
+verifier = "testbin/test_rules_harness"
 
 class RulesTest(unittest.TestCase):
     def setUp(self):
@@ -44,6 +45,17 @@ class RulesTest(unittest.TestCase):
         except subprocess.CalledProcessError:
             pass
 
+    def ensure_result(self, start, expected, *move_list):
+        pairs = [tuple(move_list[i:i+2]) for i in range(0, len(move_list), 2)]
+        pgn_data = " ".join(
+            "%d.%s %s" % (i + 1, p[0], p[1]) if len(p) == 2
+                else "%d.%s" % (i + 1, p[0])
+            for i, p in enumerate(pairs))
+        args = [verifier, start, expected]
+        proc = subprocess.Popen(args, stdin=subprocess.PIPE)
+        proc.communicate(pgn_data)
+        self.assertEqual(0, proc.returncode)
+
     def testPawn(self):
         self.ensure_valid("a4")
         self.ensure_valid("a3")
@@ -56,6 +68,11 @@ class RulesTest(unittest.TestCase):
     def testBishop(self):
         self.ensure_valid("a4", "b5", "a5", "Ba6")
         self.ensure_invalid("a4", "b5", "a5", "b6", "a6", "Ba6")
+
+    def testCastle(self):
+        start = "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b q - - -"
+        end   = "2kr1bnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - -"
+        self.ensure_result(start, end, "O-O-O")
 # 
 #     def testCastle(self):
 #         board = """
