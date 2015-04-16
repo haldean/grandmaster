@@ -49,7 +49,7 @@ read_ply(const char *pgn, const int n, int *const i, char *const notation)
     while (pgn[*i] != '\n' && pgn[*i] != ' '
             && *i < n && notation_i < MAX_NOTATION_LEN)
         notation[notation_i++] = pgn[(*i)++];
-    if (*i == n || notation_i == MAX_NOTATION_LEN)
+    if (notation_i == MAX_NOTATION_LEN)
         return 1;
     notation[notation_i] = '\0';
     return 0;
@@ -124,6 +124,8 @@ parse_pgn(const char *pgn, int n, struct move *start)
         if (next == NULL)
             pgn_fail("failed to parse white ply %s", notation)
         last = next;
+        if (i == n)
+            return last;
 
         err = read_termination(pgn, n, i);
         if (!err)
