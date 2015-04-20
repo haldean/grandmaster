@@ -57,15 +57,19 @@ class RulesTest(unittest.TestCase):
             args = [verifier, start, expected]
         proc = subprocess.Popen(
             args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        proc.communicate(pgn_data)
+            stderr=subprocess.STDOUT)
+        stdout, _ = proc.communicate(pgn_data)
         # retcode == 0 means all is good, retcode == 1 means that the moves
         # didn't parse, and retcode == 2 means that the moves parsed but the
         # result didn't match.
         if expected is None:
-            self.assertEqual(1, proc.returncode)
+            expect_code = 1
         else:
-            self.assertEqual(0, proc.returncode)
+            expect_code = 0
+        if proc.returncode != expect_code:
+            print "\nFAILURE -------------\n%s\n^^^^^^^^^^^^^^^^^^^^^" % stdout
+            self.fail("expected return code %s, got %s"
+                      % (expect_code, proc.returncode))
 
     def testPawn(self):
         self.ensure_valid("a4")
