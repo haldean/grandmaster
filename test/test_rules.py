@@ -51,9 +51,16 @@ class RulesTest(unittest.TestCase):
             "%d.%s %s" % (i + 1, p[0], p[1]) if len(p) == 2
                 else "%d.%s" % (i + 1, p[0])
             for i, p in enumerate(pairs))
-        args = [verifier, start, start]
-        proc = subprocess.Popen(args, stdin=subprocess.PIPE)
+        if expected is None:
+            args = [verifier, start, start]
+        else:
+            args = [verifier, start, expected]
+        proc = subprocess.Popen(
+            args, stdin=subprocess.PIPE, stdout=None, stderr=None)
         proc.communicate(pgn_data)
+        # retcode == 0 means all is good, retcode == 1 means that the moves
+        # didn't parse, and retcode == 2 means that the moves parsed but the
+        # result didn't match.
         if expected is None:
             self.assertEqual(1, proc.returncode)
         else:

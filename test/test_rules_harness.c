@@ -67,13 +67,14 @@ main(int argc, char *argv[])
         fprintf(stderr, "expected %s\n", move_to_fen(expected));
         fprintf(stderr, "actual   %s\n", move_to_fen(last));
         fprintf(stderr, "FAIL\n");
-    } else
-        fprintf(stderr, "OK\n");
+        return 2;
+    }
+    fprintf(stderr, "OK\n");
 
     /* dealloc at end of process so we can run things through valgrind, even
      * though it's otherwise unnecessary */
     free_move_tree(last);
     free_move_tree(expected);
 
-    return match ? 0 : 2;
+    return 0;
 }
