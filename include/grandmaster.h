@@ -65,7 +65,7 @@ struct move {
     struct position end;
     color_t player;
     char *algebraic;
-    const struct move *parent;
+    struct move *parent;
     struct board *post_board;
 };
 
@@ -89,7 +89,7 @@ get_root(struct move *out);
 void
 parse_algebraic(
     const char *notation,
-    const struct move *last_move,
+    struct move *last_move,
     struct move **out);
 
 /* Returns true if the movement in the move struct represents a valid movement

@@ -94,7 +94,7 @@ free_move_tree(struct move *move)
 {
     if (move->parent != NULL)
         /* explicitly remove const qualifier here. */
-        free_move_tree((struct move *) move->parent);
+        free_move_tree(move->parent);
     free_move(move);
 }
 

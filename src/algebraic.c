@@ -166,7 +166,7 @@ parse_pawn(
 void
 parse_algebraic(
     const char *input,
-    const struct move *last_move,
+    struct move *last_move,
     struct move **out)
 {
     char *notation;
