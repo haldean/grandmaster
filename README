@@ -16,3 +16,7 @@ is half-done; you can run the half that's done by running "make test".
 
 grandmaster is distributed under the GNU GPLv2. You can find the full text of
 this license in the LICENSE file in this repository.
+
+Building grandmaster requires GNU make; BSD make (and thus presumably other
+POSIX-compatible make implementations not from GNU) do not support the
+included makefile.

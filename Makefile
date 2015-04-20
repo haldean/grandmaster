@@ -32,7 +32,7 @@ build/%.o: src/%.c
 	@mkdir -p build
 	@# -MD builds makefiles with dependencies in-line with the object files. We
 	@# include them in the -include directive below
-	$(CC) -MD -c $(COPTS) -o $@ $<
+	$(CC) $(COPTS) -MD -c -o $@ $<
 
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
