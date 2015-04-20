@@ -106,60 +106,18 @@ class RulesTest(unittest.TestCase):
         self.ensure_result(start, qend, "Rg8", "c3", "O-O-O")
         # invalid; can't castle kingside after kingside rook has moved
         self.ensure_result(start, None, "Rg8", "c3", "O-O")
-# 
-#     def testBadCastle(self):
-#         board = """
-#         bR __ __ __ bK bB bN bR
-#         bp __ bp bp __ bp bp bp
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ bp __ __ __ __ __ __
-#         wp __ __ __ bp __ __ __
-#         __ wp wp wp wp wp wp wp
-#         wR wN wB wQ wK wB wN wR
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(b.can_castle(chess.black, chess.queenside))
-#         self.assertTrue(b.can_castle(chess.black, chess.kingside))
-#         m = chess.Move.on_board((7, 0), (7, 2), b)
-#         b = b.apply(m)
-#         self.assertFalse(b.can_castle(chess.black, chess.queenside))
-#         self.assertTrue(b.can_castle(chess.black, chess.kingside))
-# 
-#         board = """
-#         bR __ __ __ bK bB bN bR
-#         bp __ bp __ __ bp bp bp
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wR __ __ __ __
-#         wp __ __ __ bp __ __ __
-#         __ wp wp wp wp wp wp wp
-#         wR wN wB wQ wK wB wN wR
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((7, 4), (7, 2), b)
-#         self.assertFalse(m.is_valid(b))
-# 
-#     def testEnPassant(self):
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ bp __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((6, 2), (4, 2), b)
-#         self.assertTrue(m.is_valid(b))
-#         b = b.apply(m)
-#         m = chess.Move.on_board((4, 3), (5, 2), b)
-#         self.assertTrue(m.is_valid(b))
-#         b = b.apply(m)
-#         self.assertFalse(list(b.find(chess.Piece(chess.black, chess.pawn))))
-# 
+
+    @unittest.expectedFailure
+    def testCastleThroughCheck(self):
+        start = "r3kbnr/p1p2ppp/8/8/3R4/P7/1PPPPPPP/RNBQKBNR b kq - - -"
+        self.ensure_result(start, None, "O-O-O")
+
+    @unittest.expectedFailure
+    def testEnPassant(self):
+        start = "3k4/2p5/8/3P4/8/8/8/3K4 b - - - -"
+        end   = "3k4/8/2P5/8/8/8/8/3K4 b - - - -"
+        self.ensure_result(start, end, "c5", "dxc6")
+
 #     def testInCheck(self):
 #         board = """
 #         __ __ __ bK __ __ __ __
