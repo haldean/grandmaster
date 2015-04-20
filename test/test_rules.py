@@ -99,10 +99,12 @@ class RulesTest(unittest.TestCase):
         self.ensure_result(start, qend, "O-O-O")
         self.ensure_result(start, kend, "O-O")
 
+        kend  = "1r3rk1/p1pp1ppp/8/8/1p6/P1P1p3/1P1PPPPP/RNBQKBNR w - - - -"
         self.ensure_result(start, kend, "Rb8", "c3", "O-O")
         # invalid; can't castle queenside after queenside rook has moved
         self.ensure_result(start, None, "Rb8", "c3", "O-O-O")
 
+        qend  = "2kr2r1/p1pp1ppp/8/8/1p6/P1P1p3/1P1PPPPP/RNBQKBNR w - - - -"
         self.ensure_result(start, qend, "Rg8", "c3", "O-O-O")
         # invalid; can't castle kingside after kingside rook has moved
         self.ensure_result(start, None, "Rg8", "c3", "O-O")

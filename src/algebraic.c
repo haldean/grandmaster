@@ -53,11 +53,11 @@ parse_castle(
     int rook_end_file;
 
     castle_type = 0;
-    if (!strncmp(notation, "0-0", 5) || !strncmp(notation, "O-O", 5)) {
-        castle_type = out->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
-    }
-    else if (!strncmp(notation, "0-0-0", 5) || !strncmp(notation, "O-O-O", 5)) {
+    if (!strncmp(notation, "0-0-0", 5) || !strncmp(notation, "O-O-O", 5)) {
         castle_type = out->player == WHITE ? WHITE_QUEENSIDE : BLACK_QUEENSIDE;
+    }
+    else if (!strncmp(notation, "0-0", 3) || !strncmp(notation, "O-O", 3)) {
+        castle_type = out->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
     }
 
     if (!castle_type)
@@ -286,13 +286,23 @@ done:
             (struct piece) { .color = 0, .piece_type = 0 };
     }
 
-    if (piece.piece_type == ROOK || piece.piece_type == KING) {
+    if (piece.piece_type == KING) {
         if (result->player == WHITE) {
             result->post_board->available_castles &=
                 ~(WHITE_KINGSIDE | WHITE_QUEENSIDE);
         } else {
             result->post_board->available_castles &=
                 ~(BLACK_KINGSIDE | BLACK_QUEENSIDE);
+        }
+    }
+    else if (piece.piece_type == ROOK) {
+        if (result->start.file == 0) {
+            result->post_board->available_castles &=
+                ~(WHITE_QUEENSIDE | BLACK_QUEENSIDE);
+        }
+        else if (result->start.file == 7) {
+            result->post_board->available_castles &=
+                ~(WHITE_KINGSIDE | BLACK_KINGSIDE);
         }
     }
 
