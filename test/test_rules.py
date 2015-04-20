@@ -66,10 +66,8 @@ class RulesTest(unittest.TestCase):
             expect_code = 1
         else:
             expect_code = 0
-        if proc.returncode != expect_code:
-            print "\nFAILURE -------------\n%s\n^^^^^^^^^^^^^^^^^^^^^" % stdout
-            self.fail("expected return code %s, got %s"
-                      % (expect_code, proc.returncode))
+        print stdout
+        self.assertEqual(proc.returncode, expect_code)
 
     def testPawn(self):
         self.ensure_valid("a4")
