@@ -40,7 +40,7 @@ testbin/%: test/%.c dist
 	@mkdir -p testbin
 	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
 
-test: test/test_rules.py testbin/move_parser
+test: test/test_rules.py testbin/move_parser testbin/test_rules_harness
 	python test/test_rules.py
 
 clean:
