@@ -35,7 +35,7 @@
 #  define alg_fail(...) do { goto error; } while (0);
 #endif
 
-inline bool
+bool
 is_valid_position(const struct position pos)
 {
     return 0 <= pos.rank && pos.rank < 8 && 0 <= pos.file && pos.file < 8;
