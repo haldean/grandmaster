@@ -75,5 +75,5 @@ main(int argc, char *argv[])
     free_move_tree(last);
     free_move_tree(expected);
 
-    return match ? 0 : 1;
+    return match ? 0 : 2;
 }

@@ -51,10 +51,13 @@ class RulesTest(unittest.TestCase):
             "%d.%s %s" % (i + 1, p[0], p[1]) if len(p) == 2
                 else "%d.%s" % (i + 1, p[0])
             for i, p in enumerate(pairs))
-        args = [verifier, start, expected]
+        args = [verifier, start, start]
         proc = subprocess.Popen(args, stdin=subprocess.PIPE)
         proc.communicate(pgn_data)
-        self.assertEqual(0, proc.returncode)
+        if expected is None:
+            self.assertEqual(1, proc.returncode)
+        else:
+            self.assertEqual(0, proc.returncode)
 
     def testPawn(self):
         self.ensure_valid("a4")
@@ -73,6 +76,9 @@ class RulesTest(unittest.TestCase):
         start = "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b q - - -"
         end   = "2kr1bnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - -"
         self.ensure_result(start, end, "O-O-O")
+
+        start = "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b - - - -"
+        self.ensure_result(start, None, "O-O-O")
 # 
 #     def testCastle(self):
 #         board = """
