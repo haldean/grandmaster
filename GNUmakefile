@@ -36,7 +36,7 @@ build/%.o: src/%.c
 
 -include $(patsubst build/%.o,build/%.d,$(objectfiles))
 
-testbin/%: test/%.c dist
+testbin/%: test/%.c $(STATICLIB)
 	@mkdir -p testbin
 	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
 
