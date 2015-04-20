@@ -41,7 +41,7 @@ testbin/%: test/%.c $(STATICLIB)
 	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
 
 test: test/test_rules.py testbin/move_parser testbin/test_rules_harness
-	python test/test_rules.py
+	python test/test_rules.py -b -v $(only_test)
 
 clean:
 	rm -rf build testbin
