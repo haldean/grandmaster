@@ -56,7 +56,8 @@ class RulesTest(unittest.TestCase):
         else:
             args = [verifier, start, expected]
         proc = subprocess.Popen(
-            args, stdin=subprocess.PIPE, stdout=None, stderr=None)
+            args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         proc.communicate(pgn_data)
         # retcode == 0 means all is good, retcode == 1 means that the moves
         # didn't parse, and retcode == 2 means that the moves parsed but the
@@ -86,23 +87,21 @@ class RulesTest(unittest.TestCase):
 
         start = "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b - - - -"
         self.ensure_result(start, None, "O-O-O")
-# 
-#     def testCastle(self):
-#         board = """
-#         bR __ __ __ bK bB bN bR
-#         bp __ bp bp __ bp bp bp
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ bp __ __ __ __ __ __
-#         wp __ __ __ bp __ __ __
-#         __ wp wp wp wp wp wp wp
-#         wR wN wB wQ wK wB wN wR
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((7, 4), (7, 2), b)
-#         self.assertTrue(m.is_valid(b))
-#         m = chess.Move.on_board((7, 4), (7, 6), b)
-#         self.assertFalse(m.is_valid(b))
+
+    def testBadCastle(self):
+        start = "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -"
+        qend  = "2kr3r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - -"
+        kend  = "r4rk1/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - -"
+        self.ensure_result(start, qend, "O-O-O")
+        self.ensure_result(start, kend, "O-O")
+
+        self.ensure_result(start, kend, "Rb8", "c3", "O-O")
+        # invalid; can't castle queenside after queenside rook has moved
+        self.ensure_result(start, None, "Rb8", "c3", "O-O-O")
+
+        self.ensure_result(start, qend, "Rg8", "c3", "O-O-O")
+        # invalid; can't castle kingside after kingside rook has moved
+        self.ensure_result(start, None, "Rg8", "c3", "O-O")
 # 
 #     def testBadCastle(self):
 #         board = """
