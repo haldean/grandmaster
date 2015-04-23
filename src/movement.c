@@ -70,19 +70,35 @@ pawn_movement_valid(const struct move *move)
     struct board *b;
     struct piece *last_move_piece;
     int d_rank;
+    int8_t passant_file;
+    bool may_be_passant;
 
     b = move->parent->post_board;
     is_capture = b->board[move->end.rank][move->end.file].piece_type != 0;
+    passant_file = move->parent->post_board->passant_file;
+    may_be_passant =
+        passant_file != NO_PASSANT && move->end.file == passant_file;
 
     if (is_capture) {
         if (abs(move->start.file - move->end.file) != 1)
             return false;
+        d_rank = move->end.rank - move->start.rank;
         if (move->player == WHITE) {
-            if (move->end.rank - move->start.rank != 1)
-                return false;
+            if (may_be_passant) {
+                if (d_rank != 1 && d_rank != 2)
+                    return false;
+            } else {
+                if (d_rank != 1)
+                    return false;
+            }
         } else {
-            if (move->end.rank - move->start.rank != -1)
-                return false;
+            if (may_be_passant) {
+                if (d_rank != -1 && d_rank != -2)
+                    return false;
+            } else {
+                if (d_rank != -1)
+                    return false;
+            }
         }
     } else if (move->start.file != move->end.file) {
         /* this might be en passant. let's check it out. */

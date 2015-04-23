@@ -69,9 +69,12 @@ struct move {
     struct board *post_board;
 };
 
+#define NO_PASSANT (-1)
+
 struct board {
     struct piece board[8][8];
     uint8_t available_castles;
+    int8_t passant_file;
 };
 
 struct game {

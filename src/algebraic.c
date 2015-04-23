@@ -115,8 +115,10 @@ parse_pawn(
     const bool is_capture,
     struct move *out)
 {
-    color_t player;
     struct board *b;
+    int capture_rank;
+    color_t player;
+    bool is_passant;
 
     player = opposite(last_move->player);
     b = last_move->post_board;
@@ -130,35 +132,58 @@ parse_pawn(
     if (!is_valid_position(out->end))
         return 0;
 
+    is_passant = false;
+
     if (is_capture) {
         if (player == WHITE) {
             out->start.rank = out->end.rank - 1;
         } else {
             out->start.rank = out->end.rank + 1;
         }
-        return 1;
+        is_passant =
+            !b->board[out->end.rank][out->end.file].piece_type;
+    } else {
+        if (player == WHITE) {
+            if (out->end.rank == 3) {
+                if (b->board[2][out->start.file].color == WHITE) {
+                    out->start.rank = 2;
+                } else {
+                    out->start.rank = 1;
+                }
+            } else {
+                out->start.rank = out->end.rank - 1;
+            }
+        } else {
+            if (out->end.rank == 4) {
+                if (b->board[5][out->start.file].color == BLACK) {
+                    out->start.rank = 5;
+                } else {
+                    out->start.rank = 6;
+                }
+            } else {
+                out->start.rank = out->end.rank + 1;
+            }
+        }
     }
 
-    if (player == WHITE) {
-        if (out->end.rank == 3) {
-            if (b->board[2][out->start.file].color == WHITE) {
-                out->start.rank = 2;
-            } else {
-                out->start.rank = 1;
-            }
-        } else {
-            out->start.rank = out->end.rank - 1;
-        }
-    } else {
-        if (out->end.rank == 4) {
-            if (b->board[5][out->start.file].color == BLACK) {
-                out->start.rank = 5;
-            } else {
-                out->start.rank = 6;
-            }
-        } else {
-            out->start.rank = out->end.rank + 1;
-        }
+    if (is_passant) {
+        out->post_board = calloc(1, sizeof(struct board));
+        memcpy(out->post_board, last_move->post_board, sizeof(struct board));
+
+        /* move the pawn */
+        out->post_board->board[out->end.rank][out->end.file] =
+            out->post_board->board[out->start.rank][out->start.file];
+        out->post_board->board[out->start.rank][out->start.file] =
+            (struct piece) { .color = 0, .piece_type = 0 };
+
+        /* remove the captured piece */
+        capture_rank = out->end.rank;
+        if (player == WHITE)
+            capture_rank--;
+        else
+            capture_rank++;
+        out->post_board->board[capture_rank][out->end.file] =
+            (struct piece) { .color = 0, .piece_type = 0 };
     }
     return 1;
 }
@@ -304,6 +329,16 @@ done:
             result->post_board->available_castles &=
                 ~(WHITE_KINGSIDE | BLACK_KINGSIDE);
         }
+    }
+
+    if (piece.piece_type == PAWN) {
+        if (abs(result->start.rank - result->end.rank) == 2 &&
+                result->start.file == result->end.file)
+            result->post_board->passant_file = result->end.file;
+        else
+            result->post_board->passant_file = NO_PASSANT;
+    } else {
+        result->post_board->passant_file = NO_PASSANT;
     }
 
     free(notation_head);

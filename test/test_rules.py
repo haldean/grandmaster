@@ -112,7 +112,6 @@ class RulesTest(unittest.TestCase):
         start = "r3kbnr/p1p2ppp/8/8/3R4/P7/1PPPPPPP/RNBQKBNR b kq - - -"
         self.ensure_result(start, None, "O-O-O")
 
-    @unittest.expectedFailure
     def testEnPassant(self):
         start = "3k4/2p5/8/3P4/8/8/8/3K4 b - - - -"
         end   = "3k4/8/2P5/8/8/8/8/3K4 b - - - -"
