@@ -1,5 +1,6 @@
 /*
- * kings.c: tools to check for check and checkmate status
+ * is_in_check.c: returns zero if in check, 1 if not in check, 2 if in checkmate
+ * or 3 on failure.
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,19 +19,30 @@
  */
 
 #include "grandmaster.h"
+#include "gameio.h"
 
-bool
-in_check(const struct move *move)
-{
-    (void)(move); /* suppress unused warning */
-    // TODO: implement this
-    return false;
-}
+#include <stdio.h>
+#include <string.h>
 
-bool
-in_checkmate(const struct move *move)
+int
+main(int argc, char *argv[])
 {
-    (void)(move); /* suppress unused warning */
-    // TODO: implement this
-    return false;
+    struct move *last;
+
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s [FEN] [to-play]\n", argv[0]);
+        return 3;
+    }
+
+    last = parse_fen(argv[1], strlen(argv[1]));
+    if (last == NULL) {
+        fprintf(stderr, "failed to parse FEN string %s\n", argv[1]);
+        return 3;
+    }
+
+    if (in_checkmate(last))
+        return 2;
+    if (in_check(last))
+        return 0;
+    return 1;
 }

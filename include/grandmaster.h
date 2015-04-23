@@ -102,6 +102,10 @@ parse_algebraic(
 bool
 is_movement_valid(const struct move *move);
 
+/* Returns true if the player to move is in checkmate. */
+bool
+in_checkmate(const struct move *move);
+
 /* Returns true if the player to move is in check or checkmate. */
 bool
 in_check(const struct move *move);

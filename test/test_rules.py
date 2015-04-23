@@ -20,16 +20,25 @@ import os
 import subprocess
 import unittest
 
-move_parser = "testbin/move_parser"
-verifier = "testbin/test_rules_harness"
+move_parser_bin = "testbin/move_parser"
+verifier_bin = "testbin/test_rules_harness"
+is_in_check_bin = "testbin/is_in_check"
+
+check = 0
+no_check = 1
+checkmate = 2
 
 class RulesTest(unittest.TestCase):
     def setUp(self):
-        if not os.path.exists(move_parser):
+        if not os.path.exists(move_parser_bin):
+            raise Exception("run tests by running `make test`")
+        if not os.path.exists(verifier_bin):
+            raise Exception("run tests by running `make test`")
+        if not os.path.exists(is_in_check_bin):
             raise Exception("run tests by running `make test`")
 
     def ensure_valid(self, *move_list):
-        args = [move_parser]
+        args = [move_parser_bin]
         args.extend(move_list)
         res = subprocess.check_output(args)
         moves = json.loads(res)
@@ -37,7 +46,7 @@ class RulesTest(unittest.TestCase):
         return moves
 
     def ensure_invalid(self, *move_list):
-        args = [move_parser]
+        args = [move_parser_bin]
         args.extend(move_list)
         try:
             res = subprocess.check_output(args)
@@ -52,9 +61,9 @@ class RulesTest(unittest.TestCase):
                 else "%d.%s" % (i + 1, p[0])
             for i, p in enumerate(pairs))
         if expected is None:
-            args = [verifier, start, start]
+            args = [verifier_bin, start, start]
         else:
-            args = [verifier, start, expected]
+            args = [verifier_bin, start, expected]
         proc = subprocess.Popen(
             args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
@@ -68,6 +77,28 @@ class RulesTest(unittest.TestCase):
             expect_code = 0
         print stdout
         self.assertEqual(proc.returncode, expect_code)
+
+    def ensure_in_check(self, fen, in_check):
+        args = [is_in_check_bin, fen]
+        proc = subprocess.Popen(
+            args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout, _ = proc.communicate()
+        print stdout
+        if in_check == check:
+            self.assertEqual(
+                check, proc.returncode,
+                "expected to be in check, was %s: %s"
+                % (proc.returncode, fen))
+        elif in_check == no_check:
+            self.assertEqual(
+                no_check, proc.returncode,
+                "expected to not be in check, was %s: %s"
+                % (proc.returncode, fen))
+        elif in_check == checkmate:
+            self.assertEqual(
+                checkmate, proc.returncode,
+                "expected to be in checkmate, was %s: %s"
+                % (proc.returncode, fen))
 
     def testPawn(self):
         self.ensure_valid("a4")
@@ -117,60 +148,19 @@ class RulesTest(unittest.TestCase):
         end   = "3k4/8/2P5/8/8/8/8/3K4 b - - - -"
         self.ensure_result(start, end, "c5", "dxc6")
 
-#     def testInCheck(self):
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         wB __ __ wp __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(chess.in_check(b, chess.black))
-# 
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ bp __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         wB __ __ wp __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertFalse(chess.in_check(b, chess.black))
-# 
-#         board = """
-#         __ __ __ __ __ __ __ __
-#         __ __ __ bK __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(chess.in_check(b, chess.black))
-# 
-#     def testBadInCheck(self):
-#         board = """
-#         __ __ __ __ __ __ __ __
-#         __ __ __ bK __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ bR __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(chess.in_check(b, chess.black))
-#         self.assertTrue(chess.in_check(b, chess.white))
+    @unittest.expectedFailure
+    def testInCheck(self):
+        fen = "3k4/8/8/B2P4/8/8/8/3K4 b - - - -"
+        self.ensure_in_check(fen, check)
+
+        fen = "3k4/2p5/8/B2P4/8/8/8/3K4 b - - - -"
+        self.ensure_in_check(fen, no_check)
+
+        fen = "3k4/2p5/8/B2P4/8/8/8/3K1r2 b - - - -"
+        self.ensure_in_check(fen, check)
+
+        fen = "3k4/2p5/8/B2P4/8/8/8/3K1r2 w - - - -"
+        self.ensure_in_check(fen, check)
 # 
 #     def testBadCheck(self):
 #         board = """
