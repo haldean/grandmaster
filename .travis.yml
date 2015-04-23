@@ -1,5 +1,7 @@
+language: c
+
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libjansson4
+  - sudo apt-get install -qq libjansson4 libjansson-dev
 
 script: make test
