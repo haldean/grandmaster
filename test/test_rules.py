@@ -148,7 +148,6 @@ class RulesTest(unittest.TestCase):
         end   = "3k4/8/2P5/8/8/8/8/3K4 b - - - -"
         self.ensure_result(start, end, "c5", "dxc6")
 
-    @unittest.expectedFailure
     def testInCheck(self):
         fen = "3k4/8/8/B2P4/8/8/8/3K4 b - - - -"
         self.ensure_in_check(fen, check)
@@ -156,10 +155,10 @@ class RulesTest(unittest.TestCase):
         fen = "3k4/2p5/8/B2P4/8/8/8/3K4 b - - - -"
         self.ensure_in_check(fen, no_check)
 
-        fen = "3k4/2p5/8/B2P4/8/8/8/3K1r2 b - - - -"
+        fen = "3k4/8/8/B2P4/8/8/8/3K1r2 b - - - -"
         self.ensure_in_check(fen, check)
 
-        fen = "3k4/2p5/8/B2P4/8/8/8/3K1r2 w - - - -"
+        fen = "3k4/8/8/B2P4/8/8/8/3K1r2 w - - - -"
         self.ensure_in_check(fen, check)
 # 
 #     def testBadCheck(self):

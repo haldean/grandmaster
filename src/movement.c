@@ -189,7 +189,7 @@ castle_movement_valid(const struct move *move)
     castles_t castle_type;
 
     if (move->algebraic == NULL)
-        move_fail("no algebraic notation on move");
+        return false;
 
     castle_type = 0;
     if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
