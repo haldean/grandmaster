@@ -138,7 +138,6 @@ class RulesTest(unittest.TestCase):
         # invalid; can't castle kingside after kingside rook has moved
         self.ensure_result(start, None, "Rg8", "c3", "O-O")
 
-    @unittest.expectedFailure
     def testCastleThroughCheck(self):
         start = "r3kbnr/p1p2ppp/8/8/3R4/P7/1PPPPPPP/RNBQKBNR b kq - - -"
         self.ensure_result(start, None, "O-O-O")

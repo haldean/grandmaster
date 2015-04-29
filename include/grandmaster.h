@@ -117,6 +117,10 @@ in_check(struct move *move);
 void
 find_piece_with_access(struct piece piece, struct move *move);
 
+/* Returns true if the given player can attack the given square. */
+bool
+can_attack(struct move *move, struct position position, color_t to_move);
+
 /* Free a move struct, leaving its parent move untouched. */
 void
 free_move(struct move *move);

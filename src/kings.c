@@ -20,30 +20,6 @@
 #include "grandmaster.h"
 #include <assert.h>
 
-bool
-can_attack(
-    struct move *move,
-    struct position king_position,
-    color_t to_move
-    )
-{
-    struct move test_move;
-    struct piece constraint;
-
-    test_move.parent = move;
-    test_move.start.rank = -1;
-    test_move.start.file = -1;
-    test_move.end.rank = king_position.rank;
-    test_move.end.file = king_position.file;
-
-    constraint.color = to_move;
-    constraint.piece_type = 0;
-
-    find_piece_with_access(constraint, &test_move);
-
-    return test_move.start.rank != -1;
-}
-
 // Find the king of the player whose turn it is.
 bool
 find_king(struct move *move, struct position *king_position)

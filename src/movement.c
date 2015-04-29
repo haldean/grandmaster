@@ -187,15 +187,22 @@ bool
 castle_movement_valid(const struct move *move)
 {
     castles_t castle_type;
+    struct position king;
+    struct position king_end;
+    struct position rook;
+    int file_step;
+    int d_file;
 
     if (move->algebraic == NULL)
         return false;
 
     castle_type = 0;
-    if (!strncmp(move->algebraic, "0-0-0", 5) || !strncmp(move->algebraic, "O-O-O", 5)) {
+    if (!strncmp(move->algebraic, "0-0-0", 5) ||
+            !strncmp(move->algebraic, "O-O-O", 5)) {
         castle_type = move->player == WHITE ? WHITE_QUEENSIDE : BLACK_QUEENSIDE;
     }
-    else if (!strncmp(move->algebraic, "0-0", 3) || !strncmp(move->algebraic, "O-O", 3)) {
+    else if (!strncmp(move->algebraic, "0-0", 3) ||
+            !strncmp(move->algebraic, "O-O", 3)) {
         castle_type = move->player == WHITE ? WHITE_KINGSIDE : BLACK_KINGSIDE;
     }
     if (castle_type == 0)
@@ -204,8 +211,35 @@ castle_movement_valid(const struct move *move)
     if (!(move->parent->post_board->available_castles & castle_type))
         move_fail("castle type not available");
 
-    /* TODO: check nothing between rook and endpoint, king and endpoint */
-    /* TODO: check that the king isn't in check in the intermediate square */
+    king.file = 4;
+    if (castle_type & (WHITE_KINGSIDE | WHITE_QUEENSIDE)) {
+        king.rank = 0;
+        king_end.rank = 0;
+        rook.rank = 0;
+    } else {
+        king.rank = 7;
+        king_end.rank = 7;
+        rook.rank = 7;
+    }
+    if (castle_type & (WHITE_KINGSIDE | BLACK_KINGSIDE)) {
+        king_end.file = 6;
+        rook.file = 7;
+    } else {
+        king_end.file = 2;
+        rook.file = 0;
+    }
+    if (any_between(king, rook, move->parent->post_board))
+        return false;
+
+    file_step = sign(king_end.file - king.file);
+    d_file = file_step;
+    for (king.file += file_step;
+            king.file != king_end.file;
+            king.file += file_step) {
+        if (can_attack(move->parent, king, move->parent->player))
+            return false;
+    }
+
     return true;
 }
 
