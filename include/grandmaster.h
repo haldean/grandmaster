@@ -102,13 +102,13 @@ parse_algebraic(
 bool
 is_movement_valid(const struct move *move);
 
-/* Returns true if the player to move is in checkmate. */
+/* Returns true if the given player is in checkmate. */
 bool
-in_checkmate(struct move *move);
+in_checkmate(struct move *move, color_t player);
 
-/* Returns true if the player to move is in check or checkmate. */
+/* Returns true if the given player is in check or checkmate. */
 bool
-in_check(struct move *move);
+in_check(struct move *move, color_t player);
 
 /* Finds a piece of the given color and type that has access to move->end,
  * respecting any preexisting values in move->start. Populates the value at

@@ -27,6 +27,7 @@ is_in_check_bin = "testbin/is_in_check"
 check = 0
 no_check = 1
 checkmate = 2
+check_names = {check: "check", no_check: "no_check", checkmate: "checkmate"}
 
 class RulesTest(unittest.TestCase):
     def setUp(self):
@@ -75,7 +76,7 @@ class RulesTest(unittest.TestCase):
             expect_code = 1
         else:
             expect_code = 0
-        print stdout
+        print stdout.strip()
         self.assertEqual(proc.returncode, expect_code)
 
     def ensure_in_check(self, fen, in_check):
@@ -83,22 +84,11 @@ class RulesTest(unittest.TestCase):
         proc = subprocess.Popen(
             args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = proc.communicate()
-        print stdout
-        if in_check == check:
-            self.assertEqual(
-                check, proc.returncode,
-                "expected to be in check, was %s: %s"
-                % (proc.returncode, fen))
-        elif in_check == no_check:
-            self.assertEqual(
-                no_check, proc.returncode,
-                "expected to not be in check, was %s: %s"
-                % (proc.returncode, fen))
-        elif in_check == checkmate:
-            self.assertEqual(
-                checkmate, proc.returncode,
-                "expected to be in checkmate, was %s: %s"
-                % (proc.returncode, fen))
+        stdout = stdout.strip(" \n")
+        self.assertEqual(
+            in_check, proc.returncode,
+            "expected %s, got %s: %s\nstdout:\n%s"
+            % (check_names[in_check], check_names[proc.returncode], fen, stdout))
 
     def testPawn(self):
         self.ensure_valid("a4")
@@ -159,76 +149,21 @@ class RulesTest(unittest.TestCase):
 
         fen = "3k4/8/8/B2P4/8/8/8/3K1r2 w - - - -"
         self.ensure_in_check(fen, check)
-# 
-#     def testBadCheck(self):
-#         board = """
-#         __ __ __ __ __ __ __ __
-#         __ __ __ bK __ bR __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         m = chess.Move.on_board((6, 5), (0, 5), b)
-#         self.assertFalse(m.is_valid(b))
-# 
-#     def testCheckmate(self):
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ __ wQ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         wB __ __ wp __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         # Kxd7 is a valid move.
-#         self.assertFalse(chess.in_checkmate(b, chess.black))
-# 
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ __ wQ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(chess.in_checkmate(b, chess.black))
-# 
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         bR __ __ wQ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertFalse(chess.in_checkmate(b, chess.black))
-# 
-#         board = """
-#         __ __ bB bK bR __ __ __
-#         bR __ __ __ __ __ __ __
-#         __ __ __ wQ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertFalse(chess.in_checkmate(b, chess.black))
-# 
+
+        fen = "3k4/3Q4/8/B2P4/8/8/8/3K4 b - - - -"
+        # Kxd7 is a valid move.
+        self.ensure_in_check(fen, check)
+
+        fen = "3k4/3Q4/8/3P4/B7/8/8/3K4 b - - - -"
+        self.ensure_in_check(fen, checkmate)
+
+        fen = "3k4/r2Q4/8/3P4/B7/8/8/3K4 b - - - -"
+        self.ensure_in_check(fen, check)
+
+        fen = "2Bkr3/r7/eQ4/8/B7/8/8/3K4 b - - - -"
+        # Rd7 is a valid move.
+        self.ensure_in_check(fen, check)
+
 #     def testStalemate(self):
 #         board = """
 #         __ __ __ bK __ __ __ __

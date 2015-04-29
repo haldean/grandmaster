@@ -341,6 +341,10 @@ done:
         result->post_board->passant_file = NO_PASSANT;
     }
 
+    if (in_check(result, result->player)) {
+        alg_fail("still in check after move");
+    }
+
     free(notation_head);
     *out = result;
     return;

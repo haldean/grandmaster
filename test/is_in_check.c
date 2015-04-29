@@ -30,7 +30,7 @@ main(int argc, char *argv[])
     struct move *last;
 
     if (argc < 2) {
-        fprintf(stderr, "usage: %s [FEN] [to-play]\n", argv[0]);
+        fprintf(stderr, "usage: %s [FEN]\n", argv[0]);
         return 3;
     }
 
@@ -40,9 +40,9 @@ main(int argc, char *argv[])
         return 3;
     }
 
-    if (in_checkmate(last))
+    if (in_checkmate(last, opposite(last->player)))
         return 2;
-    if (in_check(last))
+    if (in_check(last, opposite(last->player)))
         return 0;
     return 1;
 }
