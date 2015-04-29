@@ -73,18 +73,27 @@ in_checkmate(struct move *move, color_t player)
 {
     struct position king_position;
     struct position test_pos;
-    bool found_king;
+    struct piece constraints;
+    struct move *test_move;
+    struct position *threats;
+    struct board *b;
+    char *cap_str;
+    char move_str[6];
     int d_file;
     int d_rank;
-    char move_str[6];
-    char *cap_str;
-    struct board *b;
-    struct move *test_move;
+    int n_threats;
+    bool found_king;
 
     b = move->post_board;
     found_king = find_king(move, &king_position, player);
     assert(found_king);
 
+    if (!can_attack(move, king_position, opposite(player)))
+        /* We're not even in check, let alone checkmate. */
+        return false;
+
+    /* See if the king can escape by moving out of check or capturing the piece
+     * itself. */
     for (d_file = -1; d_file <= 1; d_file++) {
         for (d_rank = -1; d_rank <= 1; d_rank++) {
             if (d_file == 0 && d_rank == 0)
@@ -116,5 +125,16 @@ in_checkmate(struct move *move, color_t player)
             }
         }
     }
+
+    /* If not, let's see if something else can block whatever is threatening the
+     * king. */
+    constraints.color = opposite(player);
+    constraints.piece_type = -1;
+    find_all_with_access(constraints, move, &n_threats, &threats);
+
+    /* If more than one threat exists, double check! We're hosed. */
+    if (n_threats > 1)
+        return true;
+
     return true;
 }

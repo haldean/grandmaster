@@ -110,6 +110,16 @@ in_checkmate(struct move *move, color_t player);
 bool
 in_check(struct move *move, color_t player);
 
+/* Finds all pieces of the given color and type that has access to move->end,
+ * respecting any preexisting values in move->start. Returns a list of positions
+ * where accessible pieces are located. */
+void
+find_all_with_access(
+    struct piece piece,
+    struct move *move,
+    int *n_results,
+    struct position **results);
+
 /* Finds a piece of the given color and type that has access to move->end,
  * respecting any preexisting values in move->start. Populates the value at
  * move->start with results if any are found. If none are found, move is

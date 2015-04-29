@@ -20,7 +20,62 @@
 #include "grandmaster.h"
 
 #include <string.h>
+#include <stdlib.h>
 
+void
+find_all_with_access(
+    struct piece piece,
+    struct move *move,
+    int *n_results,
+    struct position **results)
+{
+    int8_t rank;
+    int8_t file;
+    struct move test_move;
+    struct piece *board_piece;
+    struct position *res;
+
+    res = calloc(10, sizeof(struct position));
+    if (res == NULL) {
+        n_results = 0;
+        return;
+    }
+
+    memset(&test_move, 0x00, sizeof(struct move));
+    test_move.parent = move->parent;
+    test_move.end = move->end;
+
+    for (rank = 0; rank < 8; rank++) {
+        /* we could do this more efficiently by skipping the loop altogether in
+         * this case, but I like the succinctness of doing this all in one loop
+         * with no special cases. */
+        if (move->start.rank != -1 && move->start.rank != rank)
+            continue;
+        for (file = 0; file < 8; file++) {
+            if (move->start.file != -1 && move->start.file != file)
+                continue;
+            board_piece = &move->parent->post_board->board[rank][file];
+            if (piece.piece_type != 0 &&
+                    board_piece->piece_type != piece.piece_type)
+                continue;
+            if (piece.color != 0 && board_piece->color != piece.color)
+                continue;
+            test_move.start.rank = rank;
+            test_move.start.file = file;
+            if (is_movement_valid(&test_move)) {
+                *results[*n_results] = test_move.start;
+                (*n_results)++;
+            }
+        }
+    }
+
+    *results = realloc(res, *n_results);
+    if (*results == NULL) {
+        n_results = 0;
+        free(res);
+        return;
+    }
+}
 
 void
 find_piece_with_access(struct piece piece, struct move *move)
