@@ -191,7 +191,6 @@ castle_movement_valid(const struct move *move)
     struct position king_end;
     struct position rook;
     int file_step;
-    int d_file;
 
     if (move->algebraic == NULL)
         return false;
@@ -232,7 +231,6 @@ castle_movement_valid(const struct move *move)
         return false;
 
     file_step = sign(king_end.file - king.file);
-    d_file = file_step;
     for (king.file += file_step;
             king.file != king_end.file;
             king.file += file_step) {
