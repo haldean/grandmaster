@@ -150,6 +150,8 @@ class RulesTest(unittest.TestCase):
         fen = "3k4/8/8/B2P4/8/8/8/3K1r2 w - - - -"
         self.ensure_in_check(fen, check)
 
+    @unittest.expectedFailure
+    def testCheckmate(self):
         fen = "3k4/3Q4/8/B2P4/8/8/8/3K4 b - - - -"
         # Kxd7 is a valid move.
         self.ensure_in_check(fen, check)
