@@ -179,7 +179,7 @@ class RulesTest(unittest.TestCase):
 #         """
 #         b = chess.Board.parse(board)
 #         self.assertFalse(chess.in_stalemate(b, chess.black))
-# 
+#
 #         board = """
 #         __ __ __ bK __ __ __ __
 #         __ __ __ wQ __ __ __ __
@@ -192,7 +192,7 @@ class RulesTest(unittest.TestCase):
 #         """
 #         b = chess.Board.parse(board)
 #         self.assertFalse(chess.in_stalemate(b, chess.black))
-# 
+#
 #         board = """
 #         bK __ __ __ __ __ __ __
 #         __ __ wR __ __ __ __ __
