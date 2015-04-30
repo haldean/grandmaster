@@ -35,14 +35,14 @@ find_all_with_access(
     struct piece *board_piece;
     struct position *res;
 
+    *n_results = 0;
     res = calloc(10, sizeof(struct position));
     if (res == NULL) {
-        n_results = 0;
         return;
     }
 
     memset(&test_move, 0x00, sizeof(struct move));
-    test_move.parent = move;
+    test_move.parent = move->parent;
     test_move.end = move->end;
 
     for (rank = 0; rank < 8; rank++) {
@@ -54,7 +54,7 @@ find_all_with_access(
         for (file = 0; file < 8; file++) {
             if (move->start.file != -1 && move->start.file != file)
                 continue;
-            board_piece = &move->post_board->board[rank][file];
+            board_piece = &move->parent->post_board->board[rank][file];
             if (piece.piece_type != 0 &&
                     board_piece->piece_type != piece.piece_type)
                 continue;
@@ -71,7 +71,7 @@ find_all_with_access(
 
     *results = realloc(res, *n_results);
     if (*results == NULL) {
-        n_results = 0;
+        *n_results = 0;
         free(res);
         return;
     }

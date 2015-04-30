@@ -112,14 +112,7 @@ in_check(struct move *move, color_t player);
 
 /* Finds all pieces of the given color and type that has access to move->end,
  * respecting any preexisting values in move->start. Returns a list of positions
- * where accessible pieces are located.
- *
- * Note: find_all_with_access differs from fird_piece_with_access in one
- * important way; find_piece_with_access takes a dummy move as its argument,
- * since it modifies the move to return the desired value. As such, it does not
- * expect its argument to have a post_board filled out, and uses the board on
- * its argument's parent instead. find_all_with_access does not have the same
- * constraint; you should pass a fully-populated board to it. */
+ * where accessible pieces are located. */
 void
 find_all_with_access(
     struct piece piece,

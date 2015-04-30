@@ -18,8 +18,11 @@
  */
 
 #include "grandmaster.h"
+
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Find the king of the player whose turn it is.
 bool
@@ -125,16 +128,35 @@ in_checkmate(struct move *move, color_t player)
             }
         }
     }
+    if (test_move != NULL)
+        free(test_move);
 
     /* If not, let's see if something else can block whatever is threatening the
      * king. */
     constraints.color = opposite(player);
-    constraints.piece_type = -1;
-    find_all_with_access(constraints, move, &n_threats, &threats);
+    constraints.piece_type = 0;
+
+    test_move = calloc(1, sizeof(struct move));
+    test_move->parent = move;
+    test_move->start.rank = -1;
+    test_move->start.file = -1;
+    test_move->end.rank = king_position.rank;
+    test_move->end.file = king_position.file;
+
+    find_all_with_access(constraints, test_move, &n_threats, &threats);
+    assert(n_threats > 0);
 
     /* If more than one threat exists, double check! We're hosed. */
-    if (n_threats > 1)
+    if (n_threats > 1) {
+        free(threats);
         return true;
+    }
+
+    /* See if anything can capture the threatening piece. */
+    if (can_attack(move, threats[0], player)) {
+        free(threats);
+        return false;
+    }
 
     return true;
 }
