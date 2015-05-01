@@ -18,4 +18,4 @@
  */
 
 /* Turn on OpenBSD/FreeBSD xmalloc with junk filling. */
-char *malloc_options = "JX";
+char *malloc_options = "JXF";
