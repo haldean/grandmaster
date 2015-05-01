@@ -18,6 +18,7 @@
  */
 
 #include "grandmaster.h"
+#include "grandmaster_internal.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -27,7 +28,7 @@
 // Find the king of the player whose turn it is.
 bool
 find_king(
-        struct move *move,
+        const struct move *move,
         struct position *king_position,
         color_t player)
 {
@@ -65,6 +66,7 @@ in_check(struct move *move, color_t player)
     struct position king_position;
     bool found_king;
 
+    assert_valid_color(player);
     found_king = find_king(move, &king_position, player);
     assert(found_king);
 
@@ -87,6 +89,7 @@ in_checkmate(struct move *move, color_t player)
     int n_threats;
     bool found_king;
 
+    assert_valid_color(player);
     b = move->post_board;
     found_king = find_king(move, &king_position, player);
     assert(found_king);
@@ -153,6 +156,7 @@ in_checkmate(struct move *move, color_t player)
     }
 
     /* See if anything can capture the threatening piece. */
+    printf("threat: %c%c\n", threats[0].file + 'a', threats[0].rank + '1');
     if (can_attack(move, threats[0], player)) {
         free(threats);
         return false;

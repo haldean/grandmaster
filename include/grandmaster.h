@@ -41,8 +41,6 @@ typedef enum {
     BLACK = 'b'
 } color_t;
 
-#define opposite(x) ((x) == WHITE ? BLACK : WHITE)
-
 typedef enum {
     WHITE_KINGSIDE = 0x01,
     WHITE_QUEENSIDE = 0x02,
@@ -83,6 +81,10 @@ struct game {
     struct move *current;
 };
 
+/* Returns the opposite color of the given color. */
+color_t
+opposite(color_t color);
+
 /* Returns a move that contains the root of the full game tree. */
 void
 get_root(struct move *out);
@@ -96,11 +98,10 @@ parse_algebraic(
     struct move **out);
 
 /* Returns true if the movement in the move struct represents a valid movement
- * for the piece that moved. This only checks the "geometry" of the move, and
- * that there was no pieces between the start and end point (if applicable). It
- * does not check for other properties, like not moving into check. */
+ * for the piece that moved. Moves passed into this function must have their
+ * post_board correctly filled out. */
 bool
-is_movement_valid(const struct move *move);
+is_movement_valid(struct move *move);
 
 /* Returns true if the given player is in checkmate. */
 bool

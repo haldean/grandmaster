@@ -85,6 +85,10 @@ class RulesTest(unittest.TestCase):
             args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, _ = proc.communicate()
         stdout = stdout.strip(" \n")
+        self.assertTrue(
+            proc.returncode in check_names,
+            "expected %s, got return code %s: %s\nstdout:\n%s"
+            % (check_names[in_check], proc.returncode, fen, stdout))
         self.assertEqual(
             in_check, proc.returncode,
             "expected %s, got %s: %s\nstdout:\n%s"
@@ -150,7 +154,6 @@ class RulesTest(unittest.TestCase):
         fen = "3k4/8/8/B2P4/8/8/8/3K1r2 w - - - -"
         self.ensure_in_check(fen, check)
 
-    @unittest.expectedFailure
     def testCheckmate(self):
         fen = "3k4/3Q4/8/B2P4/8/8/8/3K4 b - - - -"
         # Kxd7 is a valid move.
@@ -160,9 +163,10 @@ class RulesTest(unittest.TestCase):
         self.ensure_in_check(fen, checkmate)
 
         fen = "3k4/r2Q4/8/3P4/B7/8/8/3K4 b - - - -"
+        # Rxd7 is a valid move.
         self.ensure_in_check(fen, check)
 
-        fen = "2Bkr3/r7/eQ4/8/B7/8/8/3K4 b - - - -"
+        fen = "2Bkr3/r7/3Q4/8/B7/8/8/3K4 b - - - -"
         # Rd7 is a valid move.
         self.ensure_in_check(fen, check)
 

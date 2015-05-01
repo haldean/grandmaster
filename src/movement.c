@@ -19,6 +19,7 @@
 
 #include "grandmaster.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -35,6 +36,7 @@
 #else
 #  define move_fail(...) do { return false; } while (0);
 #endif
+
 
 bool
 any_between(
@@ -253,7 +255,7 @@ king_movement_valid(const struct move *move)
 }
 
 bool
-is_movement_valid(const struct move *move)
+is_movement_valid(struct move *move)
 {
     struct piece *piece;
     struct piece *captured;
@@ -274,6 +276,9 @@ is_movement_valid(const struct move *move)
     /* can't capture our own pieces. */
     captured = &move->parent->post_board->board[move->end.rank][move->end.file];
     if (captured->color == piece->color)
+        return false;
+
+    if (captured->piece_type != KING && in_check(move, move->player))
         return false;
 
     switch (piece->piece_type) {

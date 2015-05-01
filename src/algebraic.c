@@ -18,6 +18,7 @@
  */
 
 #include "grandmaster.h"
+#include "grandmaster_internal.h"
 #include "gameio.h"
 
 #include <stdbool.h>
@@ -298,17 +299,10 @@ parse_algebraic(
         alg_fail("no pieces with access to end location");
 
 done:
+    apply_movement(result);
+
     if (!is_movement_valid(result)) {
         alg_fail("movement wasn't valid");
-    }
-
-    if (result->post_board == NULL) {
-        result->post_board = calloc(1, sizeof(struct board));
-        memcpy(result->post_board, last_move->post_board, sizeof(struct board));
-        result->post_board->board[result->end.rank][result->end.file] =
-            result->post_board->board[result->start.rank][result->start.file];
-        result->post_board->board[result->start.rank][result->start.file] =
-            (struct piece) { .color = 0, .piece_type = 0 };
     }
 
     if (piece.piece_type == KING) {
@@ -339,10 +333,6 @@ done:
             result->post_board->passant_file = NO_PASSANT;
     } else {
         result->post_board->passant_file = NO_PASSANT;
-    }
-
-    if (in_check(result, result->player)) {
-        alg_fail("still in check after move");
     }
 
     free(notation_head);

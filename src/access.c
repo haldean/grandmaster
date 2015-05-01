@@ -18,9 +18,11 @@
  */
 
 #include "grandmaster.h"
+#include "grandmaster_internal.h"
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void
 find_all_with_access(
@@ -34,12 +36,19 @@ find_all_with_access(
     struct move test_move;
     struct piece *board_piece;
     struct position *res;
+    const int max_res = 16;
+    const int max_res_arraylen = max_res * sizeof(struct position);
 
     *n_results = 0;
-    res = calloc(10, sizeof(struct position));
+    /* instead of repeatedly growing the result array, alloc an array large
+     * enough to store the maximum number of responses and then realloc at the
+     * end of the function down to the appropriate size. Even at max length,
+     * this is only 32 bytes of data. */
+    res = malloc(max_res_arraylen);
     if (res == NULL) {
         return;
     }
+    memset(res, 0xFF, max_res_arraylen);
 
     memset(&test_move, 0x00, sizeof(struct move));
     test_move.parent = move->parent;
@@ -62,14 +71,16 @@ find_all_with_access(
                 continue;
             test_move.start.rank = rank;
             test_move.start.file = file;
-            if (is_movement_valid(&test_move)) {
-                *results[*n_results] = test_move.start;
+            test_move.player = piece.color;
+            apply_movement(&test_move);
+            if (is_movement_valid(&test_move) && *n_results < max_res) {
+                res[*n_results] = test_move.start;
                 (*n_results)++;
             }
         }
     }
 
-    *results = realloc(res, *n_results);
+    *results = realloc(res, *n_results * sizeof(struct position));
     if (*results == NULL) {
         *n_results = 0;
         free(res);
@@ -106,6 +117,8 @@ find_piece_with_access(struct piece piece, struct move *move)
                 continue;
             test_move.start.rank = rank;
             test_move.start.file = file;
+            test_move.player = piece.color;
+            apply_movement(&test_move);
             if (is_movement_valid(&test_move)) {
                 move->start = test_move.start;
                 return;
