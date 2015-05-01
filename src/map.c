@@ -27,15 +27,23 @@ build_access_map(struct move *move, struct access_map *out)
     int rank;
     int file;
     struct piece constraints;
+    struct move test_move;
 
     constraints.color = 0;
     constraints.piece_type = 0;
 
+    test_move.parent = move;
+
     for (rank = 0; rank < 8; rank++) {
         for (file = 0; file < 8; file++) {
+            test_move.start.rank = -1;
+            test_move.start.file = -1;
+            test_move.end.rank = rank;
+            test_move.end.file = file;
+
             find_all_with_access(
                 constraints,
-                move,
+                &test_move,
                 &out->board[rank][file].n_accessors,
                 &out->board[rank][file].accessors
             );

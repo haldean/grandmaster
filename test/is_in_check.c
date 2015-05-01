@@ -40,6 +40,8 @@ main(int argc, char *argv[])
         return 3;
     }
 
+    if (in_stalemate(last, opposite(last->player)))
+        return 3;
     if (in_checkmate(last, opposite(last->player)))
         return 2;
     if (in_check(last, opposite(last->player)))

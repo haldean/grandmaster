@@ -27,7 +27,13 @@ is_in_check_bin = "testbin/is_in_check"
 check = 0
 no_check = 1
 checkmate = 2
-check_names = {check: "check", no_check: "no_check", checkmate: "checkmate"}
+stalemate = 3
+check_names = {
+    check: "check",
+    no_check: "no_check",
+    checkmate: "checkmate",
+    stalemate: "stalemate",
+}
 
 class RulesTest(unittest.TestCase):
     def setUp(self):
@@ -170,49 +176,13 @@ class RulesTest(unittest.TestCase):
         # Rd7 is a valid move.
         self.ensure_in_check(fen, check)
 
-        fen = "8/8/3r4/4q3/5r2/8/2R5/4K3 w - - - -"
+        fen = "k7/8/3r4/4q3/5r2/8/2R5/4K3 w - - - -"
         # Re2 is a valid move.
         self.ensure_in_check(fen, check)
 
-#     def testStalemate(self):
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ __ wQ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         wB __ __ wp __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertFalse(chess.in_stalemate(b, chess.black))
-#
-#         board = """
-#         __ __ __ bK __ __ __ __
-#         __ __ __ wQ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wp __ __ __ __
-#         wB __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertFalse(chess.in_stalemate(b, chess.black))
-#
-#         board = """
-#         bK __ __ __ __ __ __ __
-#         __ __ wR __ __ __ __ __
-#         __ wR __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ __ __ __ __ __
-#         __ __ __ wK __ __ __ __
-#         """
-#         b = chess.Board.parse(board)
-#         self.assertTrue(chess.in_stalemate(b, chess.black))
+    def testStalemate(self):
+        fen = "3k4/8/8/8/8/1r6/2r5/K7 w - - - -"
+        self.ensure_in_check(fen, stalemate)
 
 
 if __name__ == '__main__':

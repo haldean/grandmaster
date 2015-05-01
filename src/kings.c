@@ -172,3 +172,35 @@ in_checkmate(struct move *move, color_t player)
     return true;
 
 }
+
+bool
+in_stalemate(struct move *move, color_t player)
+{
+    struct piece *piece;
+    struct position *position;
+    struct access_map *map;
+    struct board *board;
+    int rank;
+    int file;
+    int i;
+
+    if (in_check(move, player))
+        return false;
+
+    /* Go through the access map looking for positions that have a piece of our
+     * color that can access them. If we find one, it means that this player has
+     * a valid move and we're not in forced stalemate. */
+    board = move->post_board;
+    map = board->access_map;
+    for (rank = 0; rank < 8; rank++) {
+        for (file = 0; file < 8; file++) {
+            for (i = 0; i < map->board[rank][file].n_accessors; i++) {
+                position = &map->board[rank][file].accessors[i];
+                piece = &board->board[position->rank][position->file];
+                if (piece->color == player)
+                    return false;
+            }
+        }
+    }
+    return true;
+}

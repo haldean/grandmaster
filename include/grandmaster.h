@@ -120,6 +120,10 @@ in_checkmate(struct move *move, color_t player);
 bool
 in_check(struct move *move, color_t player);
 
+/* Returns true if the given player is in forced stalemate. */
+bool
+in_stalemate(struct move *move, color_t player);
+
 /* Finds all pieces of the given color and type that has access to move->end,
  * respecting any preexisting values in move->start. Returns a list of positions
  * where accessible pieces are located. */

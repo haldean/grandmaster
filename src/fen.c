@@ -18,6 +18,7 @@
  */
 
 #include "gameio.h"
+#include "grandmaster_internal.h"
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -186,6 +187,8 @@ parse_fen(const char *fen, int n)
 
     /* TODO: en passant square */
 
+    board->access_map = calloc(1, sizeof(struct access_map));
+    build_access_map(result, board->access_map);
     return result;
 
 error:
