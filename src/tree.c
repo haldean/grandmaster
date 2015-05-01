@@ -101,8 +101,11 @@ free_move_tree(struct move *move)
 void
 free_move(struct move *move)
 {
-    if (move->post_board != NULL)
+    if (move->post_board != NULL) {
+        if (move->post_board->access_map != NULL)
+            free(move->post_board->access_map);
         free(move->post_board);
+    }
     if (move->algebraic != NULL)
         free(move->algebraic);
     free(move);

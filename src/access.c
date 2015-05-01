@@ -66,6 +66,8 @@ find_all_with_access(
             if (move->start.file != -1 && move->start.file != file)
                 continue;
             board_piece = &move->parent->post_board->board[rank][file];
+            if (board_piece->piece_type == 0)
+                continue;
             if (piece.piece_type != 0 &&
                     board_piece->piece_type != piece.piece_type)
                 continue;
@@ -73,7 +75,7 @@ find_all_with_access(
                 continue;
             test_move.start.rank = rank;
             test_move.start.file = file;
-            test_move.player = piece.color;
+            test_move.player = board_piece->color;
             apply_movement(&test_move);
             if (is_movement_valid(&test_move) && *n_results < max_res) {
                 res[*n_results] = test_move.start;
@@ -112,6 +114,8 @@ find_piece_with_access(struct piece piece, struct move *move)
             if (move->start.file != -1 && move->start.file != file)
                 continue;
             board_piece = &move->parent->post_board->board[rank][file];
+            if (board_piece->piece_type == 0)
+                continue;
             if (piece.piece_type != 0 &&
                     board_piece->piece_type != piece.piece_type)
                 continue;
@@ -119,7 +123,7 @@ find_piece_with_access(struct piece piece, struct move *move)
                 continue;
             test_move.start.rank = rank;
             test_move.start.file = file;
-            test_move.player = piece.color;
+            test_move.player = board_piece->color;
             apply_movement(&test_move);
             if (is_movement_valid(&test_move)) {
                 move->start = test_move.start;

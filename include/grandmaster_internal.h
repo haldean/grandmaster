@@ -27,3 +27,11 @@ apply_movement(struct move *m);
 /* Asserts that the given color is either white or black. */
 void
 assert_valid_color(color_t color);
+
+/* Builds an access map from a move. */
+void
+build_access_map(struct move *move, struct access_map *out);
+
+/* Frees an access map. */
+void
+free_access_map(struct access_map *map);

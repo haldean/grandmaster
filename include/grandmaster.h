@@ -23,6 +23,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define NO_PASSANT (-1)
+
 typedef uint64_t player_id_t;
 
 typedef enum {
@@ -64,21 +66,28 @@ struct move {
     color_t player;
     char *algebraic;
     struct move *parent;
+
     struct board *post_board;
-};
-
-#define NO_PASSANT (-1)
-
-struct board {
-    struct piece board[8][8];
-    uint8_t available_castles;
-    int8_t passant_file;
 };
 
 struct game {
     player_id_t player_white;
     player_id_t player_black;
     struct move *current;
+};
+
+struct access_map {
+    struct {
+        int n_accessors;
+        struct position *accessors;
+    } board[8][8];
+};
+
+struct board {
+    struct piece board[8][8];
+    struct access_map *access_map;
+    uint8_t available_castles;
+    int8_t passant_file;
 };
 
 /* Returns the opposite color of the given color. */

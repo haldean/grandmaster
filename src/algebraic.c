@@ -335,6 +335,9 @@ done:
         result->post_board->passant_file = NO_PASSANT;
     }
 
+    result->post_board->access_map = calloc(1, sizeof(struct access_map));
+    build_access_map(result, result->post_board->access_map);
+
     free(notation_head);
     *out = result;
     return;
