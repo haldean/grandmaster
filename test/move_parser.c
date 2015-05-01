@@ -23,6 +23,7 @@
 #include <jansson.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int
 main(int argc, char *argv[])
@@ -31,39 +32,34 @@ main(int argc, char *argv[])
     struct move *next;
     int i;
     char *notation;
-    bool print = false;
     json_t *results;
 
-    if (argc && argv[0][0] == '.') {
-        print = true;
-        argv++;
+    if (argc <= 1) {
+        printf("FAILED: missing FEN starting position\n");
+        return 1;
     }
+
     results = json_array();
 
-    last = calloc(1, sizeof(struct move));
-    get_root(last);
-    if (print)
-        print_move(last);
+    if (strlen(argv[1])) {
+        last = parse_fen(argv[1], strlen(argv[1]));
+    } else {
+        last = calloc(1, sizeof(struct move));
+        get_root(last);
+    }
 
-    for (i = 1; i < argc; i++) {
+    for (i = 2; i < argc; i++) {
         notation = argv[i];
         parse_algebraic(notation, last, &next);
         if (next == NULL) {
             printf("FAILED: parse_algebraic returned error on %s\n", notation);
             return 1;
         }
-        if (print) {
-            printf("\n");
-            print_move(next);
-        }
         json_array_append_new(results, move_to_json(next));
         last = next;
     }
 
-    if (!print) {
-        json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
-        printf("\n");
-    }
-
+    json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
+    printf("\n");
     return 0;
 }

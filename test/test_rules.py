@@ -44,19 +44,17 @@ class RulesTest(unittest.TestCase):
         if not os.path.exists(is_in_check_bin):
             raise Exception("run tests by running `make test`")
 
-    def ensure_valid(self, *move_list):
-        args = [move_parser_bin]
+    def ensure_valid(self, start, *move_list):
+        args = [move_parser_bin, start]
         args.extend(move_list)
         res = subprocess.check_output(args)
         moves = json.loads(res)
         self.assertEqual(len(move_list), len(moves))
         return moves
 
-    def ensure_invalid(self, *move_list):
-        args = [move_parser_bin]
-        args.extend(move_list)
+    def ensure_invalid(self, start, *move_list):
         try:
-            res = subprocess.check_output(args)
+            self.ensure_valid(start, *move_list)
             self.fail("move list %s did not fail" % move_list)
         except subprocess.CalledProcessError:
             pass
@@ -101,17 +99,17 @@ class RulesTest(unittest.TestCase):
             % (check_names[in_check], check_names[proc.returncode], fen, stdout))
 
     def testPawn(self):
-        self.ensure_valid("a4")
-        self.ensure_valid("a3")
-        self.ensure_invalid("a5")
+        self.ensure_valid("", "a4")
+        self.ensure_valid("", "a3")
+        self.ensure_invalid("", "a5")
 
-        self.ensure_valid("a4", "b5")
-        self.ensure_valid("a4", "b5", "axb5")
-        self.ensure_invalid("a4", "c5", "axb5")
+        self.ensure_valid("", "a4", "b5")
+        self.ensure_valid("", "a4", "b5", "axb5")
+        self.ensure_invalid("", "a4", "c5", "axb5")
 
     def testBishop(self):
-        self.ensure_valid("a4", "b5", "a5", "Ba6")
-        self.ensure_invalid("a4", "b5", "a5", "b6", "a6", "Ba6")
+        self.ensure_valid("", "a4", "b5", "a5", "Ba6")
+        self.ensure_invalid("", "a4", "b5", "a5", "b6", "a6", "Ba6")
 
     def testCastle(self):
         start = "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b q - - -"
