@@ -81,6 +81,10 @@ parse_castle(
     rook_end_file = is_kingside ? 5 : 3;
 
     out->post_board = calloc(1, sizeof(struct board));
+    memcpy(out->post_board, last_move->post_board, sizeof(struct board));
+
+    out->post_board->access_map = NULL;
+
     /* update available castles */
     out->post_board->available_castles =
         last_move->post_board->available_castles;
@@ -92,7 +96,6 @@ parse_castle(
             ~(WHITE_KINGSIDE | WHITE_QUEENSIDE);
     }
 
-    memcpy(out->post_board, last_move->post_board, sizeof(struct board));
 
     /* move the king */
     out->post_board->board[out->end.rank][out->end.file] =
