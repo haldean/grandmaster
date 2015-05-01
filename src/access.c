@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define sign(x) (((x) > 0) - ((x) < 0))
+
 void
 find_all_with_access(
     struct piece piece,
@@ -121,8 +123,11 @@ find_piece_with_access(struct piece piece, struct move *move)
             apply_movement(&test_move);
             if (is_movement_valid(&test_move)) {
                 move->start = test_move.start;
+                free(test_move.post_board);
                 return;
             }
+            free(test_move.post_board);
+            test_move.post_board = NULL;
         }
     }
 }
@@ -149,4 +154,53 @@ can_attack(
     find_piece_with_access(constraint, &test_move);
 
     return test_move.start.rank != -1;
+}
+
+bool
+can_block(
+    struct move *move,
+    struct position mover,
+    struct position target,
+    color_t to_move
+    )
+{
+    struct piece *moving_piece;
+    struct move test_move;
+    struct piece constraint;
+    int rank_step;
+    int file_step;
+    int d_rank;
+    int d_file;
+
+    moving_piece = &move->post_board->board[mover.rank][mover.file];
+    if (moving_piece->piece_type == KNIGHT) {
+        /* No blocking a knight. You're done for. */
+        return false;
+    }
+
+    rank_step = sign(target.rank - mover.rank);
+    file_step = sign(target.file - mover.file);
+    d_rank = rank_step;
+    d_file = file_step;
+
+    test_move.parent = move;
+    test_move.start.rank = -1;
+    test_move.start.file = -1;
+    constraint.color = to_move;
+    constraint.piece_type = 0;
+
+    while (mover.rank + d_rank != target.rank
+            || mover.file + d_file != target.file) {
+        test_move.end.rank = mover.rank + d_rank;
+        test_move.end.file = mover.file + d_file;
+
+        find_piece_with_access(constraint, &test_move);
+        if (test_move.start.rank != -1) {
+            return true;
+        }
+
+        d_rank += rank_step;
+        d_file += file_step;
+    }
+    return false;
 }

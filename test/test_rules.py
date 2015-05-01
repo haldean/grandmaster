@@ -170,6 +170,10 @@ class RulesTest(unittest.TestCase):
         # Rd7 is a valid move.
         self.ensure_in_check(fen, check)
 
+        fen = "8/8/3r4/4q3/5r2/8/2R5/4K3 w - - - -"
+        # Re2 is a valid move.
+        self.ensure_in_check(fen, check)
+
 #     def testStalemate(self):
 #         board = """
 #         __ __ __ bK __ __ __ __

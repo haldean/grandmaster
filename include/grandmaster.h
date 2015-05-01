@@ -132,6 +132,16 @@ find_piece_with_access(struct piece piece, struct move *move);
 bool
 can_attack(struct move *move, struct position position, color_t to_move);
 
+/* Returns true if the given color can block the piece at the "mover" position
+ * from reaching the "target" position. Assumes that, without blockage, the
+ * mover could move to the target using a valid movement. */
+bool
+can_block(
+    struct move *move,
+    struct position mover,
+    struct position target,
+    color_t to_move);
+
 /* Free a move struct, leaving its parent move untouched. */
 void
 free_move(struct move *move);

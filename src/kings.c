@@ -162,5 +162,13 @@ in_checkmate(struct move *move, color_t player)
         return false;
     }
 
+    /* Last check: see if we can block the threatening piece. */
+    if (can_block(move, threats[0], king_position, player)) {
+        free(threats);
+        return false;
+    }
+
+    free(threats);
     return true;
+
 }
