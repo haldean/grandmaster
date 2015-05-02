@@ -36,3 +36,7 @@ build_access_map(struct move *move, struct access_map *out);
 /* Frees an access map. */
 void
 free_access_map(struct access_map *map);
+
+/* Loads the opening position into a board object. */
+void
+load_default_board(struct board *b);

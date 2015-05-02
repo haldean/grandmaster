@@ -24,6 +24,52 @@
 #include <string.h>
 
 void
+load_default_board(struct board *b)
+{
+    int rank;
+    int file;
+
+    b->available_castles =
+        WHITE_KINGSIDE | WHITE_QUEENSIDE | BLACK_KINGSIDE | BLACK_QUEENSIDE;
+    b->passant_file = NO_PASSANT;
+
+    b->board[0][0] = (struct piece) { .color = WHITE, .piece_type = ROOK };
+    b->board[0][1] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
+    b->board[0][2] = (struct piece) { .color = WHITE, .piece_type = BISHOP };
+    b->board[0][3] = (struct piece) { .color = WHITE, .piece_type = QUEEN };
+    b->board[0][4] = (struct piece) { .color = WHITE, .piece_type = KING };
+    b->board[0][5] = (struct piece) { .color = WHITE, .piece_type = BISHOP };
+    b->board[0][6] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
+    b->board[0][7] = (struct piece) { .color = WHITE, .piece_type = ROOK };
+    b->board[1][0] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][1] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][2] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][3] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][4] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][5] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][6] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[1][7] = (struct piece) { .color = WHITE, .piece_type = PAWN };
+    b->board[6][0] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][1] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][2] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][3] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][4] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][5] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][6] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[6][7] = (struct piece) { .color = BLACK, .piece_type = PAWN };
+    b->board[7][0] = (struct piece) { .color = BLACK, .piece_type = ROOK };
+    b->board[7][1] = (struct piece) { .color = BLACK, .piece_type = KNIGHT };
+    b->board[7][2] = (struct piece) { .color = BLACK, .piece_type = BISHOP };
+    b->board[7][3] = (struct piece) { .color = BLACK, .piece_type = QUEEN };
+    b->board[7][4] = (struct piece) { .color = BLACK, .piece_type = KING };
+    b->board[7][5] = (struct piece) { .color = BLACK, .piece_type = BISHOP };
+    b->board[7][6] = (struct piece) { .color = BLACK, .piece_type = KNIGHT };
+    b->board[7][7] = (struct piece) { .color = BLACK, .piece_type = ROOK };
+
+    b->access_map = calloc(1, sizeof(struct access_map));
+}
+
+void
 apply_movement(struct move *m)
 {
     assert(m->parent->post_board != NULL);

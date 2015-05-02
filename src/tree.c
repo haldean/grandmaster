@@ -18,6 +18,7 @@
  */
 
 #include "grandmaster.h"
+#include "grandmaster_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,43 +28,9 @@ get_root(struct move *out)
 {
     memset(out, 0, sizeof(struct move));
     out->player = BLACK;
-
     out->post_board = calloc(1, sizeof(struct board));
-    out->post_board->available_castles =
-        WHITE_KINGSIDE | WHITE_QUEENSIDE | BLACK_KINGSIDE | BLACK_QUEENSIDE;
-
-    out->post_board->board[0][0] = (struct piece) { .color = WHITE, .piece_type = ROOK };
-    out->post_board->board[0][1] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
-    out->post_board->board[0][2] = (struct piece) { .color = WHITE, .piece_type = BISHOP };
-    out->post_board->board[0][3] = (struct piece) { .color = WHITE, .piece_type = QUEEN };
-    out->post_board->board[0][4] = (struct piece) { .color = WHITE, .piece_type = KING };
-    out->post_board->board[0][5] = (struct piece) { .color = WHITE, .piece_type = BISHOP };
-    out->post_board->board[0][6] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
-    out->post_board->board[0][7] = (struct piece) { .color = WHITE, .piece_type = ROOK };
-    out->post_board->board[1][0] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][1] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][2] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][3] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][4] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][5] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][6] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[1][7] = (struct piece) { .color = WHITE, .piece_type = PAWN };
-    out->post_board->board[6][0] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][1] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][2] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][3] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][4] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][5] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][6] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[6][7] = (struct piece) { .color = BLACK, .piece_type = PAWN };
-    out->post_board->board[7][0] = (struct piece) { .color = BLACK, .piece_type = ROOK };
-    out->post_board->board[7][1] = (struct piece) { .color = BLACK, .piece_type = KNIGHT };
-    out->post_board->board[7][2] = (struct piece) { .color = BLACK, .piece_type = BISHOP };
-    out->post_board->board[7][3] = (struct piece) { .color = BLACK, .piece_type = QUEEN };
-    out->post_board->board[7][4] = (struct piece) { .color = BLACK, .piece_type = KING };
-    out->post_board->board[7][5] = (struct piece) { .color = BLACK, .piece_type = BISHOP };
-    out->post_board->board[7][6] = (struct piece) { .color = BLACK, .piece_type = KNIGHT };
-    out->post_board->board[7][7] = (struct piece) { .color = BLACK, .piece_type = ROOK };
+    load_default_board(out->post_board);
+    build_access_map(out, out->post_board->access_map);
 }
 
 bool
