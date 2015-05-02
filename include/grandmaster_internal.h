@@ -18,6 +18,7 @@
  */
 
 #include "grandmaster.h"
+#include "gameio.h"
 
 /* Blindly apply movement represented by start and end points, disregarding the
  * validity of the move itself. */
