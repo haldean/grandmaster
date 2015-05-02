@@ -26,9 +26,6 @@
 void
 load_default_board(struct board *b)
 {
-    int rank;
-    int file;
-
     b->available_castles =
         WHITE_KINGSIDE | WHITE_QUEENSIDE | BLACK_KINGSIDE | BLACK_QUEENSIDE;
     b->passant_file = NO_PASSANT;
@@ -81,4 +78,27 @@ apply_movement(struct move *m)
         m->post_board->board[m->start.rank][m->start.file] =
             (struct piece) { .color = 0, .piece_type = 0 };
     }
+}
+
+bool
+boards_equal(struct board *b1, struct board *b2)
+{
+    int rank;
+    int file;
+    struct piece *p1;
+    struct piece *p2;
+
+    if (b1->available_castles != b2->available_castles)
+        return false;
+    for (rank = 0; rank < 8; rank++) {
+        for (file = 0; file < 8; file++) {
+            p1 = &b1->board[rank][file];
+            p2 = &b2->board[rank][file];
+            if (p1->color != p2->color)
+                return false;
+            if (p1->piece_type != p2->piece_type)
+                return false;
+        }
+    }
+    return true;
 }
