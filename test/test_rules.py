@@ -178,7 +178,6 @@ class RulesTest(unittest.TestCase):
         # Re2 is a valid move.
         self.ensure_in_check(fen, check)
 
-    @unittest.expectedFailure
     def testStalemate(self):
         fen = "3k4/8/8/8/8/1r6/2r5/K7 w - - - -"
         self.ensure_in_check(fen, stalemate)

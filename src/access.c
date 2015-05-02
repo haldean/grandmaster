@@ -81,6 +81,8 @@ find_all_with_access(
                 res[*n_results] = test_move.start;
                 (*n_results)++;
             }
+            free(test_move.post_board);
+            test_move.post_board = NULL;
         }
     }
 
