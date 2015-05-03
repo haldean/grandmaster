@@ -52,11 +52,10 @@ find_king(
             break;
     }
 
-    if (!found_king)
-        return false;
-
     king_position->rank = king_rank;
     king_position->file = king_file;
+    if (!found_king)
+        return false;
     return true;
 }
 
