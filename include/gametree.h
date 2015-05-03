@@ -20,6 +20,7 @@
 #include "grandmaster.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef uint64_t game_id_t;
 typedef uint64_t player_id_t;
@@ -31,12 +32,24 @@ struct game {
     struct move *current;
 };
 
+struct state_node {
+    struct move *move;
+    size_t n_children;
+    struct state_node *children;
+};
+
 struct game_tree {
     size_t n_states;
-    struct move *states;
+    struct state_node *states;
     size_t n_games;
     struct game *games;
-}
+};
+
+void
+init_gametree(struct game_tree *gt);
+
+void
+append_state(struct game_tree *gt, struct move *move);
 
 struct game *
 new_game(player_id_t white, player_id_t black);
@@ -46,6 +59,15 @@ get_game(game_id_t game);
 
 bool
 make_move(
-    struct game_tree *tree,
+    struct game_tree *gt,
     struct game *game,
     const char *notation);
+
+void
+free_game_tree(struct game_tree *gt);
+
+json_t *
+game_tree_to_json(struct game_tree *gt);
+
+void
+game_tree_from_json(json_t *doc, struct game_tree *gt);

@@ -19,9 +19,13 @@
 
 #include "grandmaster.h"
 #include "grandmaster_internal.h"
+#include "gametree.h"
 
+#include <assert.h>
 #include <jansson.h>
 #include <stdio.h>
+
+#define json_set json_object_set_new_nocheck
 
 void
 read_location(const char *str, struct position *result)
@@ -114,10 +118,10 @@ board_to_json(const struct board *board)
         json_array_append_new(board_array, rank_array);
     }
 
-    json_object_set_new_nocheck(board_root, "board", board_array);
+    json_set(board_root, "board", board_array);
 
     available_castles = json_integer(board->available_castles);
-    json_object_set_new_nocheck(
+    json_set(
         board_root, "available_castles", available_castles);
 
     return board_root;
@@ -136,24 +140,65 @@ move_to_json(const struct move *move)
     } else {
         temp = json_null();
     }
-    json_object_set_new_nocheck(root, "algebraic", temp);
+    json_set(root, "algebraic", temp);
 
     if (move->post_board != NULL) {
         temp = board_to_json(move->post_board);
     } else {
         temp = json_null();
     }
-    json_object_set_new_nocheck(root, "board", temp);
+    json_set(root, "board", temp);
 
     temp = json_integer(move->start.rank);
-    json_object_set_new_nocheck(root, "start_rank", temp);
+    json_set(root, "start_rank", temp);
     temp = json_integer(move->start.file);
-    json_object_set_new_nocheck(root, "start_file", temp);
+    json_set(root, "start_file", temp);
 
     temp = json_integer(move->end.rank);
-    json_object_set_new_nocheck(root, "end_rank", temp);
+    json_set(root, "end_rank", temp);
     temp = json_integer(move->end.file);
-    json_object_set_new_nocheck(root, "end_file", temp);
+    json_set(root, "end_file", temp);
 
     return root;
+}
+
+json_t *
+game_tree_to_json(struct game_tree *gt)
+{
+    size_t i;
+    size_t j;
+    struct move *move;
+    json_t *out;
+    json_t *states;
+    json_t *games;
+    json_t *move_json;
+    bool found_parent;
+
+    out = json_object();
+    states = json_array();
+    json_set(out, "states", states);
+    games = json_array();
+    json_set(out, "games", games);
+
+    for (i = 0; i < gt->n_states; i++) {
+        move = gt->states[i].move;
+        move_json = move_to_json(move);
+        json_set(move_json, "id", json_integer(i));
+        if (move->parent == NULL) {
+            json_set(move_json, "parent", json_null());
+        } else {
+            found_parent = false;
+            for (j = 0; j < gt->n_states; j++) {
+                if (gt->states[j].move == move->parent) {
+                    json_set(move_json, "parent", json_integer(j));
+                    found_parent = true;
+                    break;
+                }
+            }
+            assert(found_parent);
+        }
+        json_array_append_new(states, move_json);
+    }
+
+    return out;
 }

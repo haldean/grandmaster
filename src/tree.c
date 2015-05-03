@@ -19,9 +19,24 @@
 
 #include "grandmaster.h"
 #include "grandmaster_internal.h"
+#include "gametree.h"
 
 #include <stdlib.h>
 #include <string.h>
+
+void
+init_gametree(struct game_tree *gt)
+{
+    gt->n_states = 1;
+    gt->states = calloc(1, sizeof(struct state_node));
+    gt->n_games = 0;
+    gt->games = NULL;
+
+    gt->states[0].n_children = 0;
+    gt->states[0].children = NULL;
+    gt->states[0].move = calloc(1, sizeof(struct move));
+    get_root(gt->states[0].move);
+}
 
 void
 get_root(struct move *out)
