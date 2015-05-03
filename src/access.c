@@ -87,7 +87,7 @@ find_all_with_access(
     }
 
     *results = realloc(res, *n_results * sizeof(struct position));
-    if (*results == NULL) {
+    if (*results == NULL && *n_results) {
         *n_results = 0;
         free(res);
         return;
