@@ -20,12 +20,11 @@
 #ifndef __GRANDMASTER_H__
 #define __GRANDMASTER_H__
 
+#include <jansson.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 #define NO_PASSANT (-1)
-
-typedef uint64_t player_id_t;
 
 typedef enum {
     PAWN = 'p',
@@ -70,12 +69,6 @@ struct move {
     struct board *post_board;
 };
 
-struct game {
-    player_id_t player_white;
-    player_id_t player_black;
-    struct move *current;
-};
-
 struct access_map {
     struct {
         int n_accessors;
@@ -93,10 +86,6 @@ struct board {
 /* Returns the opposite color of the given color. */
 color_t
 opposite(color_t color);
-
-/* Returns a move that contains the root of the full game tree. */
-void
-get_root(struct move *out);
 
 /* Parse algebraic notation and return the result. **out is set to null if the
  * input was not a valid move. */
@@ -155,16 +144,16 @@ can_block(
     struct position target,
     color_t to_move);
 
-/* Free a move struct, leaving its parent move untouched. */
-void
-free_move(struct move *move);
-
-/* Free a move struct and all of its parents. */
-void
-free_move_tree(struct move *move);
-
 /* Returns true if the two boards are equivalent. */
 bool
 boards_equal(struct board *, struct board *);
+
+/* Convert a move to JSON. */
+json_t *
+move_to_json(const struct move *);
+
+/* Convert a move to FEN. */
+char *
+move_to_fen(const struct move *);
 
 #endif

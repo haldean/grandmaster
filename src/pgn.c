@@ -17,7 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "gameio.h"
+#include "grandmaster.h"
+#include "grandmaster_internal.h"
+
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_NOTATION_LEN 63

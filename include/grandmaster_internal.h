@@ -17,8 +17,31 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef __GRANDMASTER_INTERNAL_H__
+#define __GRANDMASTER_INTERNAL_H__
+
 #include "grandmaster.h"
-#include "gameio.h"
+
+void
+read_location(const char *str, struct position *result);
+
+/* Reads PGN data and returns a hierarchy of moves starting at the given start
+ * move. If the provided start move is NULL, a new root node is created. */
+struct move *
+parse_pgn(const char *pgn, int n, struct move *start);
+
+/* Parse FEN data into a move. Private API because it makes a "truncated" move
+ * with no hierarchy associated with it. */
+struct move *
+parse_fen(const char *fen, int n);
+
+/* Print a move to stdout. */
+void
+print_move(const struct move *);
+
+/* Convert a board to JSON. */
+json_t *
+board_to_json(const struct board *);
 
 /* Blindly apply movement represented by start and end points, disregarding the
  * validity of the move itself. */
@@ -40,3 +63,17 @@ free_access_map(struct access_map *map);
 /* Loads the opening position into a board object. */
 void
 load_default_board(struct board *b);
+
+/* Returns a move that contains the root of the full game tree. */
+void
+get_root(struct move *out);
+
+/* Free a move struct, leaving its parent move untouched. */
+void
+free_move(struct move *move);
+
+/* Free a move struct and all of its parents. */
+void
+free_move_tree(struct move *move);
+
+#endif

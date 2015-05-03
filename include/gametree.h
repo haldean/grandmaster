@@ -1,5 +1,5 @@
 /*
- * gameio.h: tools for saving and loading game data
+ * gametree.h: game-tree-related functions and data
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,33 +17,35 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GAMEIO_H__
-#define __GAMEIO_H__
-
 #include "grandmaster.h"
-#include "jansson.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-void
-read_location(const char *str, struct position *result);
+typedef uint64_t game_id_t;
+typedef uint64_t player_id_t;
 
-/* Reads PGN data and returns a hierarchy of moves starting at the given start
- * move. If the provided start move is NULL, a new root node is created. */
-struct move *
-parse_pgn(const char *pgn, int n, struct move *start);
+struct game {
+    game_id_t id;
+    player_id_t player_white;
+    player_id_t player_black;
+    struct move *current;
+};
 
-struct move *
-parse_fen(const char *fen, int n);
+struct game_tree {
+    size_t n_states;
+    struct move *states;
+    size_t n_games;
+    struct game *games;
+}
 
-void
-print_move(const struct move *);
+struct game *
+new_game(player_id_t white, player_id_t black);
 
-json_t *
-move_to_json(const struct move *);
+struct game *
+get_game(game_id_t game);
 
-json_t *
-board_to_json(const struct board *);
-
-char *
-move_to_fen(const struct move *);
-
-#endif
+bool
+make_move(
+    struct game_tree *tree,
+    struct game *game,
+    const char *notation);

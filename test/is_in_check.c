@@ -19,7 +19,7 @@
  */
 
 #include "grandmaster.h"
-#include "gameio.h"
+#include "grandmaster_internal.h"
 
 #include <stdio.h>
 #include <string.h>

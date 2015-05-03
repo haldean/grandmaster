@@ -18,7 +18,7 @@
  */
 
 #include "grandmaster.h"
-#include "gameio.h"
+#include "grandmaster_internal.h"
 
 #include <jansson.h>
 #include <stdio.h>

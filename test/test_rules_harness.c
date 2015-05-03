@@ -18,8 +18,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <grandmaster.h>
-#include <gameio.h>
+#include "grandmaster.h"
+#include "grandmaster_internal.h"
+
 #include <stdio.h>
 #include <string.h>
 
