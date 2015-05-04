@@ -168,10 +168,11 @@ game_tree_to_json(struct game_tree *gt)
     size_t i;
     size_t j;
     struct move *move;
+    struct game *game;
     json_t *out;
     json_t *states;
     json_t *games;
-    json_t *move_json;
+    json_t *t;
     bool found_parent;
 
     out = json_object();
@@ -182,22 +183,41 @@ game_tree_to_json(struct game_tree *gt)
 
     for (i = 0; i < gt->n_states; i++) {
         move = gt->states[i].move;
-        move_json = move_to_json(move);
-        json_set(move_json, "id", json_integer(i));
+        t = move_to_json(move);
+        json_set(t, "id", json_integer(i));
         if (move->parent == NULL) {
-            json_set(move_json, "parent", json_null());
+            json_set(t, "parent", json_null());
         } else {
             found_parent = false;
             for (j = 0; j < gt->n_states; j++) {
                 if (gt->states[j].move == move->parent) {
-                    json_set(move_json, "parent", json_integer(j));
+                    json_set(t, "parent", json_integer(j));
                     found_parent = true;
                     break;
                 }
             }
             assert(found_parent);
         }
-        json_array_append_new(states, move_json);
+        json_array_append_new(states, t);
+    }
+
+    for (i = 0; i < gt->n_games; i++) {
+        game = gt->games[i];
+        t = json_object();
+        json_set(t, "id", json_integer(game->id));
+        json_set(t, "white", json_integer(game->player_white));
+        json_set(t, "black", json_integer(game->player_black));
+
+        found_parent = false;
+        for (j = 0; j < gt->n_states; j++) {
+            if (gt->states[j].move == game->current->move) {
+                json_set(t, "current", json_integer(j));
+                found_parent = true;
+                break;
+            }
+        }
+        assert(found_parent);
+        json_array_append_new(games, t);
     }
 
     return out;

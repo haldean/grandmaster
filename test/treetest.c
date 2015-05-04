@@ -30,9 +30,17 @@ main()
 {
     struct game_tree *gt;
     json_t *results;
+    game_id_t game_id;
 
     gt = calloc(1, sizeof(struct game_tree));
     init_gametree(gt);
+
+    game_id = new_game(gt, 12, 56);
+    game_id = new_game(gt, 34, 56);
+    game_id = new_game(gt, 12, 34);
+
+    make_move(gt, game_id, "e4");
+    make_move(gt, game_id, "d5");
 
     results = game_tree_to_json(gt);
     json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
