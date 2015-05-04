@@ -35,6 +35,7 @@ init_gametree(struct game_tree *gt)
     gt->states[0] = calloc(1, sizeof(struct state_node));
     gt->states[0]->n_children = 0;
     gt->states[0]->children = NULL;
+    gt->states[0]->parent = NULL;
     gt->states[0]->move = calloc(1, sizeof(struct move));
     get_root(gt->states[0]->move);
 }
@@ -121,6 +122,7 @@ make_move(
     gt->states[i]->move = move;
     gt->states[i]->n_children = 0;
     gt->states[i]->children = NULL;
+    gt->states[i]->parent = game->current;
 
     new_children = realloc(
         game->current->children,

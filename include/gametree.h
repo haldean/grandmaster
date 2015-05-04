@@ -31,6 +31,7 @@ struct state_node {
     struct move *move;
     size_t n_children;
     struct state_node **children;
+    struct state_node *parent;
 };
 
 struct game {

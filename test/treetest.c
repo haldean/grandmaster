@@ -51,6 +51,10 @@ main(int argc, char *argv[])
         fprintf(stderr, "expected 4 states, got %lu\n", gt->n_states);
         return 1;
     }
+    if (gt->games[g1]->current->parent != gt->games[g2]->current) {
+        fprintf(stderr, "g1's parent should be g2\n");
+        return 1;
+    }
 
     if (quiet) {
         fprintf(stderr, "OK\n");
