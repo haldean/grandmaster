@@ -89,7 +89,6 @@ make_move(
     struct move *t;
     struct state_node **new_children;
     struct state_node **new_states;
-    bool existing;
     size_t i;
     size_t j;
 
@@ -100,7 +99,6 @@ make_move(
     if (move == NULL)
         return false;
 
-    existing = false;
     for (i = 0; i < game->current->n_children; i++) {
         t = game->current->children[i]->move;
         if (moves_equivalent(move, t)) {
