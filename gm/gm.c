@@ -28,8 +28,35 @@
 #include <unistd.h>
 
 #define GM_PORT ("7100")
+#define MAX_MSG_LEN (4096)
 
 static int sockfd = -1;
+
+char *
+read_str(int sock, ssize_t max_len)
+{
+    ssize_t read_len;
+    int32_t msg_len;
+    char *str;
+
+    read_len = recv(sock, &msg_len, sizeof(msg_len), 0);
+    if (read_len < (ssize_t) sizeof(msg_len)) {
+        return NULL;
+    }
+    msg_len = ntohl(msg_len);
+    if (msg_len > max_len) {
+        fprintf(stderr, "W: msg len %d too big: max len %ld. discarding.\n",
+                msg_len, max_len);
+        return NULL;
+    }
+    str = malloc(msg_len);
+    read_len = recv(sock, str, msg_len, 0);
+    if (read_len < msg_len) {
+        free(str);
+        return NULL;
+    }
+    return str;
+}
 
 void
 run_gm(struct game_tree *gt)
@@ -37,6 +64,7 @@ run_gm(struct game_tree *gt)
     (void)(gt);
     int err;
     int insock;
+    char *msg;
     struct addrinfo *self;
     struct addrinfo hints;
     struct sockaddr inaddr;
@@ -80,6 +108,7 @@ run_gm(struct game_tree *gt)
             perror("E: accept error");
             goto close;
         }
+        msg = read_str(insock, MAX_MSG_LEN);
         send(insock, "go away\n", 9, 0);
         close(insock);
     }
@@ -97,6 +126,9 @@ handle_signal(int sig)
     switch (sig) {
     case SIGTERM:
         if (sockfd != -1) {
+            /* set sockfd to -1 before closing it, so that the event loop
+             * doesn't try to close the socket a second time immediately after
+             * the call to accept fails. */
             old_sockfd = sockfd;
             sockfd = -1;
             close(old_sockfd);
