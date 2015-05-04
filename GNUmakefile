@@ -40,8 +40,9 @@ testbin/%: test/%.c $(STATICLIB)
 	@mkdir -p testbin
 	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
 
-test: test/test_rules.py testbin/move_parser testbin/test_rules_harness testbin/is_in_check
+test: test/test_rules.py testbin/move_parser testbin/test_rules_harness testbin/is_in_check testbin/treetest
 	python test/test_rules.py -b -v $(only_test)
+	testbin/treetest quiet
 
 clean:
 	rm -rf build testbin

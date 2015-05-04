@@ -26,25 +26,39 @@
 #include <string.h>
 
 int
-main()
+main(int argc, char *argv[])
 {
     struct game_tree *gt;
     json_t *results;
-    game_id_t game_id;
+    game_id_t g1, g2, g3;
+    bool quiet;
+
+    quiet = argc > 1 && strncmp(argv[1], "quiet", 6) == 0;
 
     gt = calloc(1, sizeof(struct game_tree));
     init_gametree(gt);
 
-    game_id = new_game(gt, 12, 56);
-    game_id = new_game(gt, 34, 56);
-    game_id = new_game(gt, 12, 34);
+    g1 = new_game(gt, 12, 56);
+    g2 = new_game(gt, 34, 56);
+    g3 = new_game(gt, 12, 34);
 
-    make_move(gt, game_id, "e4");
-    make_move(gt, game_id, "d5");
+    make_move(gt, g1, "e4");
+    make_move(gt, g1, "d5");
+    make_move(gt, g2, "e4");
+    make_move(gt, g3, "Nc3");
 
-    results = game_tree_to_json(gt);
-    json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
-    printf("\n");
+    if (gt->n_states != 4) {
+        fprintf(stderr, "expected 4 states, got %lu\n", gt->n_states);
+        return 1;
+    }
+
+    if (quiet) {
+        fprintf(stderr, "OK\n");
+    } else {
+        results = game_tree_to_json(gt);
+        json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
+        printf("\n");
+    }
 
     return 0;
 }
