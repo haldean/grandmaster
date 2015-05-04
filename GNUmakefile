@@ -19,32 +19,41 @@ COPTS := -std=c99 -pedantic -Werror -Wall -Wextra -Iinclude -ggdb -O0 -DDEBUG \
 	$(shell pkg-config --cflags jansson)
 LDOPTS := $(shell pkg-config --libs jansson)
 HEADERS := $(wildcard src/*.h)
-STATICLIB := build/libgrandmaster.a
+STATICLIB := dist/libgrandmaster.a
 
-objectfiles := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c))
+libobjects := $(patsubst src/%.c,build/lib/%.o,$(wildcard src/*.c))
+gmobjects := $(patsubst gm/%.c,build/gm/%.o,$(wildcard gm/*.c))
 
-$(STATICLIB): $(objectfiles)
+$(STATICLIB): $(libobjects)
+	@mkdir -p dist
 	$(AR) rvcs $@ $^
 
-dist: $(STATICLIB)
-
-build/%.o: src/%.c
-	@mkdir -p build
+build/lib/%.o: src/%.c
+	@mkdir -p build/lib
 	@# -MD builds makefiles with dependencies in-line with the object files. We
 	@# include them in the -include directive below
 	$(CC) $(COPTS) -MD -c -o $@ $<
 
--include $(patsubst build/%.o,build/%.d,$(objectfiles))
+build/gm/%.o: gm/%.c
+	@mkdir -p build/gm
+	$(CC) $(COPTS) -MD -c -o $@ $<
+
+-include $(patsubst build/lib/%.o,build/lib/%.d,$(libobjects))
+-include $(patsubst build/gm/%.o,build/gm/%.d,$(gmobjects))
+
+dist/gm: $(STATICLIB) $(gmobjects)
+	@mkdir -p dist
+	$(CC) $(LDOPTS) $(gmobjects) -Ldist -lgrandmaster -o $@
 
 testbin/%: test/%.c $(STATICLIB)
 	@mkdir -p testbin
-	$(CC) $(COPTS) $< -Lbuild -lgrandmaster $(LDOPTS) -o $@
+	$(CC) $(COPTS) $< -Ldist -lgrandmaster $(LDOPTS) -o $@
 
 test: test/test_rules.py testbin/move_parser testbin/test_rules_harness testbin/is_in_check testbin/treetest
 	python test/test_rules.py -b -v $(only_test)
 	testbin/treetest quiet
 
 clean:
-	rm -rf build testbin
+	rm -rf build testbin dist
 
-.PHONY: dist clean move_parser test
+.PHONY: clean move_parser test
