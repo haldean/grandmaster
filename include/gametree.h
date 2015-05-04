@@ -51,9 +51,6 @@ struct game_tree {
 void
 init_gametree(struct game_tree *gt);
 
-void
-append_state(struct game_tree *gt, struct move *move);
-
 game_id_t
 new_game(struct game_tree *gt, player_id_t white, player_id_t black);
 
