@@ -20,7 +20,7 @@
 #ifndef __GRANDMASTER_INTERNAL_H__
 #define __GRANDMASTER_INTERNAL_H__
 
-#include "grandmaster.h"
+#include "grandmaster/core.h"
 
 void
 read_location(const char *str, struct position *result);

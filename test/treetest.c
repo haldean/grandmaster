@@ -17,8 +17,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "grandmaster.h"
-#include "gametree.h"
+#include "grandmaster/core.h"
+#include "grandmaster/tree.h"
 
 #include <jansson.h>
 #include <stdio.h>

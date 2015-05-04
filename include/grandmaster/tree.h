@@ -1,5 +1,5 @@
 /*
- * gametree.h: game-tree-related functions and data
+ * tree.h: game-tree-related functions and data
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "grandmaster.h"
+#include "grandmaster/core.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>

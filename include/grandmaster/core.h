@@ -1,5 +1,5 @@
 /*
- * grandmaster.h: API for grandmaster
+ * core.h: API for grandmaster core
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
