@@ -179,3 +179,20 @@ free_move(struct move *move)
         free(move->algebraic);
     free(move);
 }
+
+void
+free_game_tree(struct game_tree *gt)
+{
+    size_t i;
+
+    for (i = 0; i < gt->n_states; i++) {
+        free_move(gt->states[i]->move);
+        free(gt->states[i]);
+    }
+    free(gt->states);
+
+    for (i = 0; i < gt->n_games; i++) {
+        free(gt->games[i]);
+    }
+    free(gt->games);
+}

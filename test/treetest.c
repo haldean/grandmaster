@@ -64,5 +64,6 @@ main(int argc, char *argv[])
         printf("\n");
     }
 
+    free_game_tree(gt);
     return 0;
 }
