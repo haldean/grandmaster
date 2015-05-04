@@ -28,14 +28,15 @@ void
 init_gametree(struct game_tree *gt)
 {
     gt->n_states = 1;
-    gt->states = calloc(1, sizeof(struct state_node));
+    gt->states = calloc(1, sizeof(struct state_node *));
     gt->n_games = 0;
     gt->games = NULL;
 
-    gt->states[0].n_children = 0;
-    gt->states[0].children = NULL;
-    gt->states[0].move = calloc(1, sizeof(struct move));
-    get_root(gt->states[0].move);
+    gt->states[0] = calloc(1, sizeof(struct state_node));
+    gt->states[0]->n_children = 0;
+    gt->states[0]->children = NULL;
+    gt->states[0]->move = calloc(1, sizeof(struct move));
+    get_root(gt->states[0]->move);
 }
 
 game_id_t
@@ -56,7 +57,7 @@ new_game(struct game_tree *gt, player_id_t white, player_id_t black)
     gt->games[i]->id = i;
     gt->games[i]->player_white = white;
     gt->games[i]->player_black = black;
-    gt->games[i]->current = &gt->states[0];
+    gt->games[i]->current = gt->states[0];
 
     return gt->games[i]->id;
 }
@@ -87,7 +88,7 @@ make_move(
     struct move *move;
     struct move *t;
     struct state_node **new_children;
-    struct state_node *new_states;
+    struct state_node **new_states;
     bool existing;
     size_t i;
     size_t j;
@@ -111,27 +112,29 @@ make_move(
 
     new_states = realloc(
         gt->states,
-        (gt->n_states + 1) * sizeof(struct state_node));
+        (gt->n_states + 1) * sizeof(struct state_node *));
     if (new_states == NULL)
         return false;
     i = gt->n_states;
     gt->n_states++;
     gt->states = new_states;
 
-    gt->states[i].move = move;
-    gt->states[i].n_children = 0;
-    gt->states[i].children = NULL;
+    gt->states[i] = calloc(1, sizeof(struct state_node));
+    gt->states[i]->move = move;
+    gt->states[i]->n_children = 0;
+    gt->states[i]->children = NULL;
 
     new_children = realloc(
         game->current->children,
         (game->current->n_children + 1) * sizeof(struct state_node *));
     if (new_children == NULL)
         return false;
+    game->current->children = new_children;
     j = game->current->n_children;
     game->current->n_children++;
-    game->current->children[j] = &gt->states[i];
+    game->current->children[j] = gt->states[i];
 
-    game->current = &gt->states[i];
+    game->current = gt->states[i];
     return true;
 }
 

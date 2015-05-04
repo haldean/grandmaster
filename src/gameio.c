@@ -182,7 +182,7 @@ game_tree_to_json(struct game_tree *gt)
     json_set(out, "games", games);
 
     for (i = 0; i < gt->n_states; i++) {
-        move = gt->states[i].move;
+        move = gt->states[i]->move;
         t = move_to_json(move);
         json_set(t, "id", json_integer(i));
         if (move->parent == NULL) {
@@ -190,7 +190,7 @@ game_tree_to_json(struct game_tree *gt)
         } else {
             found_parent = false;
             for (j = 0; j < gt->n_states; j++) {
-                if (gt->states[j].move == move->parent) {
+                if (gt->states[j]->move == move->parent) {
                     json_set(t, "parent", json_integer(j));
                     found_parent = true;
                     break;
@@ -210,7 +210,7 @@ game_tree_to_json(struct game_tree *gt)
 
         found_parent = false;
         for (j = 0; j < gt->n_states; j++) {
-            if (gt->states[j].move == game->current->move) {
+            if (gt->states[j]->move == game->current->move) {
                 json_set(t, "current", json_integer(j));
                 found_parent = true;
                 break;

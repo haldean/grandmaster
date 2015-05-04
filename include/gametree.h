@@ -42,7 +42,7 @@ struct game {
 
 struct game_tree {
     size_t n_states;
-    struct state_node *states;
+    struct state_node **states;
     size_t n_games;
     struct game **games;
 };
