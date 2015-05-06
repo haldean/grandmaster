@@ -1,5 +1,5 @@
 /*
- * gm.c: grandmaster server
+ * gmutil.c: utilities for grandmaster server code
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,23 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
 
-extern int client_main();
-extern int server_main();
+/* Receive a length-encoded string on the given socket. */
+char *
+read_str(int sock, ssize_t max_len);
 
+/* Send a length-encoded string on the given socket. Returns 0 on success or -1
+ * on error.*/
 int
-main(int argc, char *argv[])
-{
-    if (argc != 2) {
-        fprintf(stderr, "usage: gm [client|server]\n");
-        return 1;
-    }
-    if (strcmp(argv[1], "client") == 0)
-        return client_main();
-    if (strcmp(argv[1], "server") == 0)
-        return server_main();
-    fprintf(stderr, "unrecognized operating mode %s\n", argv[1]);
-    return 1;
-}
+send_str(int sock, char *str);
