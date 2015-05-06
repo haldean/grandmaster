@@ -21,6 +21,7 @@
 #include <grandmaster/tree.h>
 #include <grandmaster/gmutil.h>
 
+#include <jansson.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
@@ -33,14 +34,55 @@
 
 static int sockfd = -1;
 
+void
+handle_client(
+    struct game_tree *gt,
+    int insock)
+{
+    char *req_msg;
+    char *resp_msg;
+    json_t *req;
+    json_t *resp;
+    json_error_t json_err;
+
+    req = NULL;
+    resp = NULL;
+
+    req_msg = read_str(insock, MAX_MSG_LEN);
+    if (req_msg == NULL) {
+        fprintf(stderr, "I: unable to load message string\n");
+        resp = json_pack("{ss}", "error", "couldn't load message string");
+        goto close;
+    }
+
+    req = json_loads(req_msg, 0, &json_err);
+    if (!req) {
+        fprintf(stderr, "I: unable to parse json\n");
+        resp = json_pack("{ss}", "error", "couldn't parse json");
+        goto close;
+    }
+
+    resp = json_pack("{si}", "num_states", gt->n_states);
+
+close:
+    free(req_msg);
+    if (req != NULL) {
+        json_decref(req);
+    }
+    if (resp != NULL) {
+        resp_msg = json_dumps(resp, JSON_PRESERVE_ORDER | JSON_INDENT(4));
+        send_str(insock, resp_msg);
+        free(resp_msg);
+        json_decref(resp);
+    }
+    close(insock);
+}
 
 void
 run_gm(struct game_tree *gt)
 {
-    (void)(gt);
     int err;
     int insock;
-    char *msg;
     struct addrinfo *self;
     struct addrinfo hints;
     struct sockaddr inaddr;
@@ -84,19 +126,7 @@ run_gm(struct game_tree *gt)
             perror("E: accept error");
             goto close;
         }
-        msg = read_str(insock, MAX_MSG_LEN);
-        if (msg == NULL) {
-            printf("unable to parse message\n");
-            send_str(insock, "{\"error\": \"couldn't parse message\"}");
-            goto close_inner;
-        }
-        err = send_str(insock, msg);
-        if (err) {
-            goto close_inner;
-        }
-
-close_inner:
-        close(insock);
+        handle_client(gt, insock);
     }
 
 close:
