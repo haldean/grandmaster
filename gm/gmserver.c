@@ -41,8 +41,10 @@ handle_client(
 {
     char *req_msg;
     char *resp_msg;
+    const char *req_kind;
     json_t *req;
     json_t *resp;
+    json_t *t;
     json_error_t json_err;
 
     req = NULL;
@@ -61,6 +63,13 @@ handle_client(
         resp = json_pack("{ss}", "error", "couldn't parse json");
         goto close;
     }
+
+    t = json_object_get(req, "kind");
+    if (t == NULL) {
+        resp = json_pack("{ss}", "error", "no kind in request");
+        goto close;
+    }
+    req_kind = json_string_value(t);
 
     resp = json_pack("{si}", "num_states", gt->n_states);
 
