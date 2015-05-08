@@ -1,0 +1,54 @@
+------------------------------------------------------------------
+The gm client-server protocol
+------------------------------------------------------------------
+
+The gm protocol is used to update and query the state of a
+grandmaster server by a grandmaster client. It is a stateless,
+unencrypted protocol, where each session is comprised of a single
+length-denoted JSON message sent from the client to the server,
+with a single length-denoted JSON message sent from the server to
+the client in reply.
+
+
+------------------------------------------------------------------
+Message format
+
+Messages contain a 4-byte message header that contains the length
+of the following message string as a network-order signed integer,
+followed by the string itself.  Note that the size does not
+include the size of the 4-byte header.
+
+       +----------------------------------------------+
+       |  msg_size  |            message              |
+       |  4 bytes   |         msg_size bytes          |
+       +----------------------------------------------+
+
+------------------------------------------------------------------
+Message kinds
+
+All messages are given meaning by the contents of the JSON object
+inside the message. The "kind" of message (analogous to a "route"
+in a RESTful API) are all given as the "kind" field on the root
+JSON object in the request.
+
+    --------------------------------------------------------------
+    kind = "new_game"
+
+    To start a game, send a request with kind set to "new_game".
+    The full structure of the request is:
+
+        {
+            "kind": "new_game",
+            "player_white": player ID (long int),
+            "player_black": player ID (long int),
+        }
+
+    The response structure is:
+
+        {
+            "game_id": game ID (long int),
+            "error": null,
+        }
+
+    The error field will be set to a string description of what
+    went wrong on error.
