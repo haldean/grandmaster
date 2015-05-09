@@ -152,6 +152,10 @@ boards_equal(struct board *, struct board *);
 json_t *
 move_to_json(const struct move *);
 
+/* Convert a board to JSON. */
+json_t *
+board_to_json(const struct board *board);
+
 /* Convert a move to FEN. */
 char *
 move_to_fen(const struct move *);

@@ -90,10 +90,15 @@ board_to_json(const struct board *board)
 {
     int rank;
     int file;
+    int i;
+    int n_accessors;
+    const struct position *a;
     const struct piece *p;
     json_t *board_root;
     json_t *board_array;
+    json_t *map_array;
     json_t *rank_array;
+    json_t *access_array;
     json_t *available_castles;
     json_t *temp;
     char piece_name[3];
@@ -121,8 +126,28 @@ board_to_json(const struct board *board)
     json_set(board_root, "board", board_array);
 
     available_castles = json_integer(board->available_castles);
-    json_set(
-        board_root, "available_castles", available_castles);
+    json_set(board_root, "available_castles", available_castles);
+
+    json_set(board_root, "passant_file", json_integer(board->passant_file));
+
+    map_array = json_array();
+    for (rank = 0; rank < 8; rank++) {
+        rank_array = json_array();
+        for (file = 0; file < 8; file++) {
+            access_array = json_array();
+            n_accessors = board->access_map->board[rank][file]->n_accessors;
+            for (i = 0; i < n_accessors; i++) {
+                a = board->access_map->board[rank][file]->accesors[n].rank;
+                temp = json_array();
+                json_array_append_new(temp, a.rank);
+                json_array_append_new(temp, a.file);
+                json_array_append_new(access_array, temp);
+            }
+            json_array_append_new(rank_array, access_array);
+        }
+        json_array_append_new(map_array, rank_array);
+    }
+    json_set(board_root, "access_map", map_array);
 
     return board_root;
 }
