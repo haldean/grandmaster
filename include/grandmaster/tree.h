@@ -17,6 +17,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#ifndef __GRANDMASTER_TREE_H__
+#define __GRANDMASTER_TREE_H__
+
 #include "grandmaster/core.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -71,3 +74,5 @@ game_tree_to_json(struct game_tree *gt);
 
 void
 game_tree_from_json(json_t *doc, struct game_tree *gt);
+
+#endif

@@ -47,8 +47,36 @@ JSON object in the request.
 
         {
             "game_id": game ID (long int),
+            "state": game state (see below),
             "error": null,
         }
 
     The error field will be set to a string description of what
     went wrong on error.
+
+    --------------------------------------------------------------
+    kind = "move"
+
+    To make a move in a game, send a request with kind set to
+    "move". The full structure of the request is:
+
+        {
+            "kind": "move",
+            "player": player ID (long int),
+            "game_id": game ID (long int),
+            "move": algebraic notation (string),
+        }
+
+    The response structure for a successful move is:
+
+        {
+            "state": game state (see below),
+            "error": null,
+        }
+
+    The response structure for an invalid move is:
+
+        {
+            "state": null,
+            "error": description of error (string),
+        }

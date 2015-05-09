@@ -17,6 +17,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <grandmaster/core.h>
+#include <grandmaster/tree.h>
+
+#include <jansson.h>
 #include <stdlib.h>
 
 /* Receive a length-encoded string on the given socket. */
@@ -27,3 +31,9 @@ read_str(int sock, ssize_t max_len);
  * on error.*/
 int
 send_str(int sock, char *str);
+
+json_t *
+handle_new_game(struct game_tree *gt, json_t *req);
+
+json_t *
+handle_move(struct game_tree *gt, json_t *req);

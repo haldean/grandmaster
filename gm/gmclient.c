@@ -70,6 +70,10 @@ client_main()
     send_str(sockfd, msg);
     buf = read_str(sockfd, MAX_MSG_LEN);
 
+    if (!buf) {
+        fprintf(stderr, "E: got no response\n");
+        return -1;
+    }
     fprintf(stderr, "OK\n");
     printf("%s\n", buf);
     return 0;

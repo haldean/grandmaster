@@ -1,5 +1,5 @@
 /*
- * gm.c: grandmaster server
+ * gmserver.c: grandmaster server
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ handle_client(
     char *req_msg;
     char *resp_msg;
     const char *req_kind;
+    size_t req_kind_len;
     json_t *req;
     json_t *resp;
     json_t *t;
@@ -70,8 +71,15 @@ handle_client(
         goto close;
     }
     req_kind = json_string_value(t);
+    req_kind_len = strnlen(req_kind, MAX_MSG_LEN);
 
-    resp = json_pack("{si}", "num_states", gt->n_states);
+    if (strncmp(req_kind, "new_game", req_kind_len) == 0) {
+        resp = handle_new_game(gt, req);
+    } else if (strncmp(req_kind, "move", req_kind_len) == 0) {
+        resp = handle_move(gt, req);
+    } else {
+        resp = json_pack("{ss}", "error", "unknown kind");
+    }
 
 close:
     free(req_msg);
