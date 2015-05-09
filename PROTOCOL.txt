@@ -80,3 +80,37 @@ JSON object in the request.
             "state": null,
             "error": description of error (string),
         }
+
+------------------------------------------------------------------
+Game state
+
+Game states are stored as a JSON document with the following
+structure:
+
+    {
+        "board": [
+            8 arrays of length 8, encoding the board, where each
+            piece is either "undefined" (for an empty square) or a
+            pair of characters, where the first character is the
+            color of the piece ("w" or "b") and the second is the
+            piece code ("p", "R", "N", "B", "Q" and "K").
+        ],
+        "available_castles":
+            castles (unsigned int) is a bitset containing zero or
+            more of the following bits:
+                0x01: white kingside is available
+                0x02: white queenside is available
+                0x04: black kingside is available
+                0x08: black queenside is available
+        "passant_file":
+            the file (encoded as an int, where "a" = 0, "b" = 1,
+            etc) in which a pawn just advanced 2 squares, or -1 if
+            no pawn can be captured en passant.
+        "access_map": [
+            8 arrays of length 8, where each element is itself an
+            array. The elements in the array are locations which
+            have access to that square, where locations are
+            encoded as (rank, file) pairs and the rank and file
+            are both zero-indexed integers.
+        ]
+    }
