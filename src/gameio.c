@@ -135,12 +135,12 @@ board_to_json(const struct board *board)
         rank_array = json_array();
         for (file = 0; file < 8; file++) {
             access_array = json_array();
-            n_accessors = board->access_map->board[rank][file]->n_accessors;
+            n_accessors = board->access_map->board[rank][file].n_accessors;
             for (i = 0; i < n_accessors; i++) {
-                a = board->access_map->board[rank][file]->accesors[n].rank;
+                a = &board->access_map->board[rank][file].accessors[i];
                 temp = json_array();
-                json_array_append_new(temp, a.rank);
-                json_array_append_new(temp, a.file);
+                json_array_append_new(temp, json_integer(a->rank));
+                json_array_append_new(temp, json_integer(a->file));
                 json_array_append_new(access_array, temp);
             }
             json_array_append_new(rank_array, access_array);
