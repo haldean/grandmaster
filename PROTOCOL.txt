@@ -94,7 +94,7 @@ structure:
             pair of characters, where the first character is the
             color of the piece ("w" or "b") and the second is the
             piece code ("p", "R", "N", "B", "Q" and "K").
-        ],
+        ]
         "available_castles":
             castles (unsigned int) is a bitset containing zero or
             more of the following bits:
@@ -113,4 +113,8 @@ structure:
             encoded as (rank, file) pairs and the rank and file
             are both zero-indexed integers.
         ]
+        "ply_index":
+            the number of plys that have been played in the game
+            so far.
+        "pgn": pgn data for the game so far
     }
