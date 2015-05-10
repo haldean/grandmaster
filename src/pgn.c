@@ -20,6 +20,7 @@
 #include "grandmaster/core.h"
 #include "grandmaster/internal.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -154,4 +155,47 @@ error:
     if (last != NULL)
         free_move_tree(last);
     return NULL;
+}
+
+char *
+create_pgn(struct move *move)
+{
+    char *base;
+    char *res;
+    size_t base_len;
+    int ret;
+
+    /* if we're the root node, there's no need to include us in the PGN. */
+    if (move->algebraic == NULL)
+        return "";
+
+    if (move->parent != NULL) {
+        base = create_pgn(move->parent);
+        base_len = strlen(base);
+    } else {
+        base = "";
+        base_len = 0;
+    }
+
+    /* propagate errors back up the stack. */
+    if (base == NULL)
+        return NULL;
+
+    if (move->player == WHITE) {
+        if (base_len > 0)
+            ret = asprintf(&res, "%s %d.%s",
+                base,
+                move->post_board->ply_index / 2 + 1,
+                move->algebraic);
+        else
+            ret = asprintf(&res, "%d.%s",
+                move->post_board->ply_index / 2 + 1,
+                move->algebraic);
+    } else {
+        ret = asprintf(&res, "%s %s", base, move->algebraic);
+    }
+
+    if (ret == -1)
+        return NULL;
+    return res;
 }

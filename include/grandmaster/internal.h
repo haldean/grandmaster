@@ -76,4 +76,10 @@ free_move(struct move *move);
 void
 free_move_tree(struct move *move);
 
+/* Creates PGN for a given move. In most cases, callers should use
+ * move->post_board->pgn instead; this is what is used to populate the pgn field
+ * on the board struct. */
+char *
+create_pgn(struct move *move);
+
 #endif
