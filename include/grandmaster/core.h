@@ -84,6 +84,8 @@ struct board {
     int8_t passant_file;
     /* ply index is the number of plys that have been played, inclusive. */
     uint16_t ply_index;
+    /* PGN is the PGN for the game played up until this point. */
+    char *pgn;
 };
 
 /* Returns the opposite color of the given color. */

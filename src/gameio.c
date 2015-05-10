@@ -149,6 +149,9 @@ board_to_json(const struct board *board)
     }
     json_set(board_root, "access_map", map_array);
 
+    json_set(board_root, "ply_index", json_integer(board->ply_index));
+    json_set(board_root, "pgn", json_string(board->pgn));
+
     return board_root;
 }
 
