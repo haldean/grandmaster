@@ -23,6 +23,8 @@
 #include <jansson.h>
 #include <stdlib.h>
 
+#define MAX_MSG_LEN 16384
+
 /* Receive a length-encoded string on the given socket. */
 char *
 read_str(int sock, ssize_t max_len);

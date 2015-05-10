@@ -28,7 +28,6 @@
 #include <unistd.h>
 
 #define GM_PORT ("7100")
-#define MAX_MSG_LEN (4096)
 
 int
 client_main()

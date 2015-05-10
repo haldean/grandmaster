@@ -30,7 +30,6 @@
 #include <unistd.h>
 
 #define GM_PORT ("7100")
-#define MAX_MSG_LEN (4096)
 
 static int sockfd = -1;
 
