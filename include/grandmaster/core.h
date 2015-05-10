@@ -82,6 +82,8 @@ struct board {
     struct access_map *access_map;
     uint8_t available_castles;
     int8_t passant_file;
+    /* ply index is the number of plys that have been played, inclusive. */
+    uint16_t ply_index;
 };
 
 /* Returns the opposite color of the given color. */

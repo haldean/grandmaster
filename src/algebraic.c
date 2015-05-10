@@ -339,6 +339,7 @@ done:
 
     result->post_board->access_map = calloc(1, sizeof(struct access_map));
     build_access_map(result, result->post_board->access_map);
+    result->post_board->ply_index = 1 + result->parent->post_board->ply_index;
 
     free(notation_head);
     *out = result;
