@@ -35,7 +35,8 @@ typedef enum {
     KING = 'K'
 } piece_type_t;
 
-#define ALL_PIECES ((piece_type_t[]) { PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING })
+#define ALL_PIECES ((piece_type_t[]) {\
+    PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING })
 
 typedef enum {
     WHITE = 'w',
