@@ -31,9 +31,9 @@
 json_t *
 game_state(struct game_tree *gt, game_id_t game)
 {
-    (void)(gt);
-    (void)(game);
-    return json_null();
+    struct move *move;
+    move = get_game(gt, game)->current->move;
+    return board_to_json(move->post_board);
 }
 
 json_t *
