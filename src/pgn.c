@@ -195,7 +195,9 @@ create_pgn(struct move *move)
         ret = asprintf(&res, "%s %s", base, move->algebraic);
     }
 
-    if (ret == -1)
+    if (ret == -1) {
+        perror("E: couldn't asprintf PGN data");
         return NULL;
+    }
     return res;
 }
