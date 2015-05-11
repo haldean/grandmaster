@@ -16,7 +16,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 COPTS := -std=c99 -pedantic -Werror -Wall -Wextra -Iinclude -ggdb -O0 -DDEBUG \
-	$(shell pkg-config --cflags jansson)
+	$(shell pkg-config --cflags jansson) -D_GNU_SOURCE
 LDOPTS := $(shell pkg-config --libs jansson)
 HEADERS := $(wildcard src/*.h)
 STATICLIB := dist/libgrandmaster.a
