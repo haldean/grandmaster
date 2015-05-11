@@ -24,6 +24,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* needed for asprintf and glibc */
+#define _GNU_SOURCE
+
 #define MAX_NOTATION_LEN 63
 
 #ifdef DEBUG
