@@ -86,6 +86,8 @@ struct board {
     uint16_t ply_index;
     /* PGN is the PGN for the game played up until this point. */
     char *pgn;
+    /* FEN is the board state encoded in Forsyth-Edwards notation. */
+    char *fen;
 };
 
 /* Returns the opposite color of the given color. */

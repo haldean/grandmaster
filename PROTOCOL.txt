@@ -117,4 +117,5 @@ structure:
             the number of plys that have been played in the game
             so far.
         "pgn": pgn data for the game so far
+        "fen": the state of the game in Forsythe-Edwards notation
     }

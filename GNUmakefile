@@ -17,7 +17,7 @@
 
 COPTS := -std=c99 -pedantic -Werror -Wall -Wextra -Iinclude -ggdb -O0 -DDEBUG \
 	$(shell pkg-config --cflags jansson) -D_GNU_SOURCE
-LDOPTS := $(shell pkg-config --libs jansson)
+LDOPTS := $(shell pkg-config --libs jansson) -lm
 HEADERS := $(wildcard src/*.h)
 STATICLIB := dist/libgrandmaster.a
 

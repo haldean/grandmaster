@@ -21,11 +21,12 @@
 #include "grandmaster/internal.h"
 
 #include <ctype.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX_NOTATION_LEN 63
-#define MAX_FEN_LEN 90
+#define MAX_FEN_LEN 128
 
 #ifdef DEBUG
 #  define fen_fail(...) do {\
@@ -88,11 +89,23 @@ move_to_fen(const struct move *move)
         fen[i++] = 'q';
 
     fen[i++] = ' ';
-    fen[i++] = '-';
+
+    if (board->passant_file == NO_PASSANT) {
+        fen[i++] = '-';
+    } else {
+        fen[i++] = 'a' + board->passant_file;
+        if (move->player == WHITE)
+            fen[i++] = '3';
+        else
+            fen[i++] = '6';
+    }
+
     fen[i++] = ' ';
     fen[i++] = '-';
     fen[i++] = ' ';
-    fen[i++] = '-';
+    i += snprintf(
+        &fen[i], MAX_FEN_LEN - i, "%d",
+        (int) ceil(board->ply_index / 2.));
 
     return fen;
 }

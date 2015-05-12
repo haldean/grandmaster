@@ -151,6 +151,7 @@ board_to_json(const struct board *board)
 
     json_set(board_root, "ply_index", json_integer(board->ply_index));
     json_set(board_root, "pgn", json_string(board->pgn));
+    json_set(board_root, "fen", json_string(board->fen));
 
     return board_root;
 }
