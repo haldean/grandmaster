@@ -94,6 +94,8 @@ make_move(
     size_t j;
 
     game = get_game(gt, game_id);
+    if (game == NULL)
+        return false;
 
     move = NULL;
     parse_algebraic(notation, game->current->move, &move);

@@ -75,6 +75,10 @@ handle_move(struct game_tree *gt, json_t *req)
     get(t, req, "move");
     notation = json_string_value(t);
 
+    if (get_game(gt, game_id) == NULL) {
+        return json_pack("{snss}", "state", "error", "game does not exist");
+    }
+
     success = make_move(gt, game_id, notation);
     if (success) {
         return json_pack("{sosn}", "state", game_state(gt, game_id), "error");
