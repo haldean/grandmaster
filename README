@@ -9,14 +9,34 @@ games, or speculative explorations of many branches of the game. It may also be
 useful for chess engines, although having never implemented a chess engine I
 can't be sure.
 
-Right now, the status of grandmaster is that it parses algebraic notation
-poorly. Many features here are missing, and the parser is probably more
-permissive than it should be. There's also a basic PGN parser. A test framework
-is half-done; you can run the half that's done by running "make test".
+grandmaster is split into two sections: "core" and "gm". The core is the
+encoding of chess logic in C; this could easily be used by other chess engines
+or game clients to represent chess game state. The core is built as a static
+library; to only build core, run "make dist/libgrandmaster.a". If you want to
+use core in your own chess application, copy libgrandmaster.a to somewhere on
+your library path and copy include/grandmaster to somewhere on your include
+path. Note that the core static library only contains definitions for the
+objects defined in include/grandmaster/core.h; the other headers define objects
+that may or may not be in other binaries or librarys.
 
-grandmaster is distributed under the GNU GPLv2. You can find the full text of
-this license in the LICENSE file in this repository.
+gm (built by running "make dist/gm") is the tool used as both client and server
+for the grandmaster protocol; a single binary is generated with a command line
+flag that switches it between server mode and client mode. Server mode accepts
+the grandmaster protocol defined in PROTOCOL and keeps game state in memory.
+The client takes JSON on stdin and length-encodes it as required by the
+grandmaster protocol, and exists almost entirely as a testing tool. A real
+client library (probably for a scripting language of some sort) is forthcoming.
 
 Building grandmaster requires GNU make; BSD make (and thus presumably other
 POSIX-compatible make implementations not from GNU) do not support the
-included makefile.
+included makefile. This is because GNU make is really great, and BSD make is
+missing many of the things that I prefer about GNU make. Believe me when I say
+this pains me; almost all of grandmaster has been written on an old OpenBSD
+system.
+
+There are some tests in the test directory; you can run them using "make test".
+All of these tests are tests against grandmaster core. Tests for gm are
+forthcoming.
+
+grandmaster is distributed under the GNU GPLv2. You can find the full text of
+this license in the LICENSE file in this repository.
