@@ -53,7 +53,14 @@ test: test/test_rules.py testbin/move_parser testbin/test_rules_harness testbin/
 	python test/test_rules.py -b -v $(only_test)
 	testbin/treetest quiet
 
+checkbin/%: check/%.c $(STATICLIB)
+	@mkdir -p checkbin
+	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck $(LDOPTS) -o $@
+
+check: checkbin/in_check
+	checkbin/in_check
+
 clean:
-	rm -rf build testbin dist
+	rm -rf build testbin checkbin dist
 
 .PHONY: clean move_parser test
