@@ -137,6 +137,7 @@ make_move(
     game->current->children[j] = gt->states[i];
 
     game->current = gt->states[i];
+    game->termination = game->current->move->post_board->termination;
     return true;
 }
 

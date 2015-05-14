@@ -41,6 +41,23 @@ is_valid_position(const struct position pos)
     return 0 <= pos.rank && pos.rank < 8 && 0 <= pos.file && pos.file < 8;
 }
 
+bool
+is_threefold_available(const struct move *m) {
+    struct board *b0;
+    uint16_t equivs;
+
+    b0 = m->post_board;
+    equivs = 0;
+    while (m->parent != NULL) {
+        m = m->parent;
+        if (boards_equal(b0, m->post_board))
+            equivs++;
+        if (equivs >= 3)
+            return true;
+    }
+    return false;
+}
+
 int
 parse_castle(
     const char *notation,
@@ -224,6 +241,11 @@ parse_algebraic(
     if (input_len < 2) {
         alg_fail("input too short");
     }
+    if (last_move->post_board->termination & TERM_GAME_OVER_MASK) {
+        alg_fail("game is over, termination %d",
+                 last_move->post_board->termination);
+    }
+
     if (parse_castle(notation, last_move, result)) {
         piece.piece_type = KING;
         piece.color = result->player;
@@ -337,11 +359,36 @@ done:
         result->post_board->passant_file = NO_PASSANT;
     }
 
+    if (piece.piece_type == PAWN || is_capture) {
+        result->post_board->fifty_move_counter = 0;
+    } else {
+        result->post_board->fifty_move_counter =
+            result->parent->post_board->fifty_move_counter + 1;
+    }
+
     result->post_board->access_map = calloc(1, sizeof(struct access_map));
     build_access_map(result, result->post_board->access_map);
     result->post_board->ply_index = 1 + result->parent->post_board->ply_index;
     result->post_board->pgn = create_pgn(result);
     result->post_board->fen = move_to_fen(result);
+
+    if (in_checkmate(result, opposite(result->player))) {
+        if (result->player == WHITE)
+            result->post_board->termination = VICTORY_WHITE;
+        else
+            result->post_board->termination = VICTORY_BLACK;
+    } else if (in_stalemate(result, opposite(result->player))) {
+        result->post_board->termination = STALEMATE;
+    }
+    result->post_board->draws = DRAW_NONE;
+
+    if (result->post_board->fifty_move_counter >= 100)
+        result->post_board->draws |= DRAW_50;
+
+    if (result->parent->post_board->draws & DRAW_THREEFOLD)
+        result->post_board->draws |= DRAW_THREEFOLD;
+    else if (is_threefold_available(result))
+        result->post_board->draws |= DRAW_THREEFOLD;
 
     free(notation_head);
     *out = result;
