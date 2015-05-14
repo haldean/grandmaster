@@ -118,4 +118,31 @@ structure:
             so far.
         "pgn": pgn data for the game so far
         "fen": the state of the game in Forsythe-Edwards notation
+        "draws":
+            draws (unsigned int) is a bitset containing zero or
+            more of the following bits:
+                0x01: a draw under the 50-move rule is available
+                0x02: a draw under threefold repetion is available
+        "termination":
+            termination (unsigned int) is one of the following:
+                "available_move":
+                    there is an available move for the player to
+                    play
+                "victory_white":
+                    white wins, black is in checkmate
+                "victory_black":
+                    black wins, white is in checkmate
+                "stalemate":
+                    a stalemate has been reached
+                "taken_draw_white":
+                    white has chosen a draw by the 50 move rule or
+                    threefold repetition
+                "taken_draw_black":
+                    black has chosen a draw by the 50 move rule or
+                    threefold repetition
+                "resignation_white":
+                    white has resigned, black wins by default
+                "resignation_black":
+                    black has resigned, white wins by default
+        "in_check": boolean, true if player to move is in check
     }
