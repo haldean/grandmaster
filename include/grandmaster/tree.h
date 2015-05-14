@@ -42,6 +42,7 @@ struct game {
     player_id_t player_white;
     player_id_t player_black;
     struct state_node *current;
+    termination_t termination;
 };
 
 struct game_tree {

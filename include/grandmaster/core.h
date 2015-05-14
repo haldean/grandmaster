@@ -50,6 +50,36 @@ typedef enum {
     BLACK_QUEENSIDE = 0x08
 } castles_t;
 
+typedef enum {
+    /* game is in progress, no termination other than resignation possible */
+    AVAILABLE_MOVE = 0x00,
+    /* white wins, black is in checkmate */
+    VICTORY_WHITE = 0x81,
+    /* black wins, white is in checkmate */
+    VICTORY_BLACK = 0x82,
+    /* a stalemate has been reached */
+    STALEMATE = 0x83,
+    /* white has chosen a draw by the 50 move rule or threefold repetition */
+    TAKEN_DRAW_WHITE = 0x84,
+    /* black has chosen a draw by the 50 move rule or threefold repetition */
+    TAKEN_DRAW_BLACK = 0x85,
+    /* white has resigned, black wins by default */
+    RESIGNATION_WHITE = 0x86,
+    /* black has resigned, white wins by default */
+    RESIGNATION_BLACK = 0x87,
+} termination_t;
+
+#define TERM_GAME_OVER_MASK 0x80
+
+typedef enum {
+    /* no draws available */
+    DRAW_NONE = 0x00,
+    /* a player could choose to take a draw due to the 50 move rule */
+    DRAW_50 = 0x01,
+    /* a player could choose to take a draw due to threefold repetition */
+    DRAW_THREEFOLD = 0x02,
+} draws_t;
+
 struct piece {
     piece_type_t piece_type;
     color_t color;
@@ -88,6 +118,24 @@ struct board {
     char *pgn;
     /* FEN is the board state encoded in Forsyth-Edwards notation. */
     char *fen;
+    /* the available termination state for this move. Note that there are
+     * multiple "the game is not over" "termination" states: both
+     * AVAILABLE_MOVE and AVAILABLE_STALEMATE are valid values here.
+     * AVAILABLE_STALEMATE means that the player to play after this move could
+     * choose to take a stalemate.
+     *
+     * Some termination values are not valid here; notably, chosen draws or
+     * resignations will never be stored here. This is because they are
+     * optional on the part of the player; this struct is for the properties
+     * of all games that reach this point. Optional terminations are stored in
+     * the game struct. */
+    termination_t termination;
+    /* the draw methods available after this turn. */
+    draws_t draws;
+    /* whether the next player to play is in check. */
+    bool in_check;
+    /* the number of plys since the last pawn move or capture. */
+    uint16_t fifty_move_counter;
 };
 
 /* Returns the opposite color of the given color. */
