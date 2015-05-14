@@ -27,13 +27,6 @@ The client takes JSON on stdin and length-encodes it as required by the
 grandmaster protocol, and exists almost entirely as a testing tool. A real
 client library (probably for a scripting language of some sort) is forthcoming.
 
-Building grandmaster requires GNU make; BSD make (and thus presumably other
-POSIX-compatible make implementations not from GNU) do not support the
-included makefile. This is because GNU make is really great, and BSD make is
-missing many of the things that I prefer about GNU make. Believe me when I say
-this pains me; almost all of grandmaster has been written on an old OpenBSD
-system.
-
 There are some tests in the test directory; you can run them using "make test".
 All of these tests are tests against grandmaster core. Tests for gm are
 forthcoming.

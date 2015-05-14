@@ -1,0 +1,30 @@
+Installing grandmaster
+------------------------------------------------------------------
+
+Install the required dependencies:
+    jansson (for JSON marshalling and unmarshalling)
+        debian derivatives: apt-get install libjansson4
+        openbsd: pkg_add jansson
+        others: http://www.digip.org/jansson/
+    check (unit testing framework)
+        debian derivatives: apt-get install check
+        openbsd: pkg_add check
+        others: http://check.sourceforge.net/
+    GNU make
+        linux: almost certainly already installed
+        openbsd: pkg_add gmake
+    python
+        linux: almost certainly already installed
+        openbsd: pkg_add python
+
+Building grandmaster requires GNU make; BSD make (and thus
+presumably other POSIX-compatible make implementations not from
+GNU) do not support the included makefile. This is because GNU
+make is really great, and BSD make is missing many of the things
+that I like about GNU make. Believe me when I say this pains me;
+almost all of grandmaster has been written on an old OpenBSD
+system.
+
+To run the test suite, run "make test" (or "gmake test", if on a
+non-GNU-by-default system). To create the gm binary, run
+"gmake dist/gm".
