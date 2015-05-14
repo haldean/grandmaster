@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #define json_set json_object_set_new_nocheck
+#define json_bool(x) ((x) ? json_true() : json_false())
 
 void
 read_location(const char *str, struct position *result)
@@ -181,7 +182,7 @@ board_to_json(const struct board *board)
     json_set(board_root, "termination",
              json_string(termination_str(board->termination)));
     json_set(board_root, "draws", json_integer(board->draws));
-    json_set(board_root, "in_check", json_boolean(board->in_check));
+    json_set(board_root, "in_check", json_bool(board->in_check));
 
     return board_root;
 }
