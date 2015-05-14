@@ -54,6 +54,31 @@ player_str(color_t player)
     return player == WHITE ? "white" : "black";
 }
 
+char *
+termination_str(termination_t term)
+{
+    switch (term) {
+    case AVAILABLE_MOVE:
+        return "available_move";
+    case VICTORY_WHITE:
+        return "victory_white";
+    case VICTORY_BLACK:
+        return "victory_black";
+    case STALEMATE:
+        return "stalemate";
+    case TAKEN_DRAW_WHITE:
+        return "taken_draw_white";
+    case TAKEN_DRAW_BLACK:
+        return "taken_draw_black";
+    case RESIGNATION_WHITE:
+        return "resignation_white";
+    case RESIGNATION_BLACK:
+        return "resignation_black";
+    default:
+        return "bad_termination_value";
+    }
+}
+
 void
 print_move(const struct move *move)
 {
@@ -152,6 +177,11 @@ board_to_json(const struct board *board)
     json_set(board_root, "ply_index", json_integer(board->ply_index));
     json_set(board_root, "pgn", json_string(board->pgn));
     json_set(board_root, "fen", json_string(board->fen));
+
+    json_set(board_root, "termination",
+             json_string(termination_str(board->termination)));
+    json_set(board_root, "draws", json_integer(board->draws));
+    json_set(board_root, "in_check", json_boolean(board->in_check));
 
     return board_root;
 }

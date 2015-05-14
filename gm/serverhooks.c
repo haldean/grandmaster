@@ -29,11 +29,19 @@
     if (!t) return json_pack("{ss}", "error", "missing field " field);
 
 json_t *
-game_state(struct game_tree *gt, game_id_t game)
+game_state(struct game_tree *gt, game_id_t game_id)
 {
+    json_t *res;
     struct move *move;
-    move = get_game(gt, game)->current->move;
-    return board_to_json(move->post_board);
+    struct game *game;
+
+    game = get_game(gt, game_id);
+    move = game->current->move;
+    res = board_to_json(move->post_board);
+    json_object_set_new(
+        res, "termination",
+        json_string(termination_str(game->termination)));
+    return res;
 }
 
 json_t *

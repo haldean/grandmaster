@@ -215,4 +215,8 @@ board_to_json(const struct board *board);
 char *
 move_to_fen(const struct move *);
 
+/* String representation for a termination state. */
+char *
+termination_str(termination_t term);
+
 #endif
