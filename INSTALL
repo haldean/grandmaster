@@ -13,9 +13,6 @@ Install the required dependencies:
     GNU make
         linux: almost certainly already installed
         openbsd: pkg_add gmake
-    python
-        linux: almost certainly already installed
-        openbsd: pkg_add python
 
 Building grandmaster requires GNU make; BSD make (and thus
 presumably other POSIX-compatible make implementations not from
