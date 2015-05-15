@@ -99,6 +99,19 @@ START_TEST(test_pawn)
 }
 END_TEST
 
+START_TEST(test_bishop)
+{
+    struct move *res;
+    char *move4[] = {"a4", "b5", "a5", "Ba6"};
+    char *move6[] = {"a4", "b5", "a5", "b6", "a6", "Ba6"};
+
+    res = apply_moves_to_fen(START_FEN, 4, move4);
+    ck_assert_ptr_ne(res, NULL);
+    res = apply_moves_to_fen(START_FEN, 6, move6);
+    ck_assert_ptr_eq(res, NULL);
+}
+END_TEST
+
 START_TEST(test_castle)
 {
     struct move *res;
@@ -274,6 +287,7 @@ int main()
     s = suite_create("grandmaster");
     tc = tcase_create("movement");
     tcase_add_test(tc, test_pawn);
+    tcase_add_test(tc, test_bishop);
     tcase_add_test(tc, test_castle);
     tcase_add_test(tc, test_en_passant);
     suite_add_tcase(s, tc);
