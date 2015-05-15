@@ -29,6 +29,8 @@
 #define CHECKMATE 2
 #define STALEMATE 3
 
+#define START_FEN "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
 int
 check_status(char *fen)
 {
@@ -66,6 +68,36 @@ apply_moves_to_fen(char *fen, size_t n_moves, char *moves[])
 
     return last;
 }
+
+START_TEST(test_pawn)
+{
+    struct move *res;
+    char *move1[1];
+    char *move2[2];
+    char *move3[3];
+
+    move1[0] = "a4";
+    res = apply_moves_to_fen(START_FEN, 1, move1);
+    ck_assert_ptr_ne(res, NULL);
+    move1[0] = "a3";
+    res = apply_moves_to_fen(START_FEN, 1, move1);
+    ck_assert_ptr_ne(res, NULL);
+    move1[0] = "a5";
+    res = apply_moves_to_fen(START_FEN, 1, move1);
+    ck_assert_ptr_eq(res, NULL);
+
+    move2[0] = "a4"; move2[1] = "b5";
+    res = apply_moves_to_fen(START_FEN, 2, move2);
+    ck_assert_ptr_ne(res, NULL);
+
+    move3[0] = "a4"; move3[1] = "b5"; move3[2] = "axb5";
+    res = apply_moves_to_fen(START_FEN, 3, move3);
+    ck_assert_ptr_ne(res, NULL);
+    move3[0] = "a4"; move3[1] = "c5"; move3[2] = "axb5";
+    res = apply_moves_to_fen(START_FEN, 3, move3);
+    ck_assert_ptr_eq(res, NULL);
+}
+END_TEST
 
 START_TEST(test_castle)
 {
@@ -241,6 +273,7 @@ int main()
 
     s = suite_create("grandmaster");
     tc = tcase_create("movement");
+    tcase_add_test(tc, test_pawn);
     tcase_add_test(tc, test_castle);
     tcase_add_test(tc, test_en_passant);
     suite_add_tcase(s, tc);
