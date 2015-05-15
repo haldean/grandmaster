@@ -1,7 +1,10 @@
 language: c
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq libjansson4 libjansson-dev check
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq libjansson4 libjansson-dev
+    - wget http://downloads.sourceforge.net/project/check/check/0.9.14/check-0.9.14.tar.gz
+    - tar zxvf check-0.9.14.tar.gz
+    - cd check-0.9.14 && ./configure && make && make install
 
 script: make check
