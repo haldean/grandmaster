@@ -26,6 +26,27 @@
 #include <stdlib.h>
 #include <string.h>
 
+START_TEST(test_tree_notation_dedup)
+{
+    struct game_tree *gt;
+    game_id_t g1, g2;
+
+    gt = calloc(1, sizeof(struct game_tree));
+    init_gametree(gt);
+
+    g1 = new_game(gt, 12, 56);
+    g2 = new_game(gt, 34, 56);
+
+    ck_assert(make_move(gt, g1, "e4"));
+    ck_assert(make_move(gt, g2, "e4?"));
+
+    ck_assert_int_eq(2, gt->n_states);
+    ck_assert_ptr_eq(gt->games[g1]->current, gt->games[g2]->current);
+
+    free_game_tree(gt);
+}
+END_TEST
+
 START_TEST(test_tree)
 {
     struct game_tree *gt;
@@ -38,17 +59,14 @@ START_TEST(test_tree)
     g2 = new_game(gt, 34, 56);
     g3 = new_game(gt, 12, 34);
 
-    make_move(gt, g1, "e4");
-    make_move(gt, g1, "d5");
-    make_move(gt, g2, "e4");
-    make_move(gt, g3, "Nc3");
+    ck_assert(make_move(gt, g1, "e4"));
+    ck_assert(make_move(gt, g1, "d5"));
+    ck_assert(make_move(gt, g2, "e4"));
+    ck_assert(make_move(gt, g3, "Nc3"));
 
-    if (gt->n_states != 4) {
-        ck_abort_msg("expected 4 states, got %lu\n", gt->n_states);
-    }
-    if (gt->games[g1]->current->parent != gt->games[g2]->current) {
-        ck_abort_msg("g1's parent should be g2\n");
-    }
+    ck_assert_int_eq(4, gt->n_states);
+    ck_assert_ptr_eq(gt->games[g1]->current->parent, gt->games[g2]->current);
+
     free_game_tree(gt);
 }
 END_TEST
@@ -62,6 +80,7 @@ make_tree_suite()
     s = suite_create("tree");
     tc = tcase_create("tree");
     tcase_add_test(tc, test_tree);
+    tcase_add_test(tc, test_tree_notation_dedup);
     suite_add_tcase(s, tc);
 
     return s;
