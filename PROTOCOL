@@ -56,6 +56,32 @@ JSON object in the request.
     went wrong on error.
 
     --------------------------------------------------------------
+    kind = "game_from_pgn"
+
+    To start a game and initialize it to the state of a game after
+    a series of moves, send a request with kind set to
+    "game_from_pgn". The moves are encoded in Portable Game
+    Notation. The full structure of the request is:
+
+        {
+            "kind": "new_game",
+            "player_white": player ID (long int),
+            "player_black": player ID (long int),
+            "pgn": PGN data (string)
+        }
+
+    The response structure is:
+
+        {
+            "game_id": game ID (long int),
+            "state": game state (see below),
+            "error": null,
+        }
+
+    The error field will be set to a string description of what
+    went wrong on error.
+
+    --------------------------------------------------------------
     kind = "move"
 
     To make a move in a game, send a request with kind set to

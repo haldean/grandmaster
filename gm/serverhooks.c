@@ -66,6 +66,33 @@ handle_new_game(struct game_tree *gt, json_t *req)
 }
 
 json_t *
+handle_game_from_pgn(struct game_tree *gt, json_t *req)
+{
+    game_id_t game;
+    player_id_t white;
+    player_id_t black;
+    const char *pgn;
+    json_t *t;
+
+    get(t, req, "player_white");
+    white = json_integer_value(t);
+
+    get(t, req, "player_black");
+    black = json_integer_value(t);
+
+    get(t, req, "pgn");
+    pgn = json_string_value(t);
+
+    game = new_game_from_pgn(gt, white, black, pgn);
+    if (game == NO_GAME)
+        return json_pack("{ss}", "error", "could not parse PGN");
+    return json_pack("{sIsosn}",
+            "game_id", game,
+            "state", game_state(gt, game),
+            "error" /* undefined */);
+}
+
+json_t *
 handle_move(struct game_tree *gt, json_t *req)
 {
     game_id_t game_id;

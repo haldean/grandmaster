@@ -250,7 +250,7 @@ parse_algebraic(
     /* create result and fill in known fields */
     result = calloc(1, sizeof(struct move));
     result->player = opposite(last_move->player);
-    result->algebraic = calloc(input_len, sizeof(char));
+    result->algebraic = calloc(input_len + 1, sizeof(char));
     strncpy(result->algebraic, notation, input_len);
     result->parent = last_move;
 
