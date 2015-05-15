@@ -196,6 +196,23 @@ START_TEST(test_in_check)
 }
 END_TEST
 
+START_TEST(test_check_movement)
+{
+    struct move *res;
+    char *qs_castle[1] = {"O-O-O"};
+    char *move_into_check[1] = {"f6"};
+    res = apply_moves_to_fen(
+        "r3kbnr/p1p2ppp/8/8/3R4/P7/1PPPPPPP/RNBQKBNR b kq - - -",
+        1, qs_castle);
+    ck_assert_ptr_eq(res, NULL);
+
+    res = apply_moves_to_fen(
+        "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b - - - -",
+        1, move_into_check);
+    ck_assert_ptr_eq(res, NULL);
+}
+END_TEST
+
 START_TEST(test_checkmate)
 {
     ck_assert_int_eq(
@@ -234,6 +251,7 @@ int main()
     tcase_add_test(tc, test_not_in_check);
     tcase_add_test(tc, test_checkmate);
     tcase_add_test(tc, test_stalemate);
+    tcase_add_test(tc, test_check_movement);
     suite_add_tcase(s, tc);
 
     sr = srunner_create(s);
