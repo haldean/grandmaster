@@ -67,6 +67,82 @@ apply_moves_to_fen(char *fen, size_t n_moves, char *moves[])
     return last;
 }
 
+START_TEST(test_castle)
+{
+    struct move *res;
+    char *ks_castle[1] = {"O-O"};
+    char *qs_castle[1] = {"O-O-O"};
+    char *qs_rook_ks_castle[3] = {"Rb8", "c3", "O-O"};
+    char *qs_rook_qs_castle[3] = {"Rb8", "c3", "O-O-O"};
+    char *ks_rook_ks_castle[3] = {"Rg8", "c3", "O-O"};
+    char *ks_rook_qs_castle[3] = {"Rg8", "c3", "O-O-O"};
+
+    res = apply_moves_to_fen(
+        "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b q - - -",
+        1, qs_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "2kr1bnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - 1");
+
+    /* castle not available */
+    res = apply_moves_to_fen(
+        "r3kbnr/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b - - - -",
+        1, qs_castle);
+    ck_assert_ptr_eq(res, NULL);
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        1, ks_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "r4rk1/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - 1");
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        1, qs_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "2kr3r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - 1");
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        1, ks_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "r4rk1/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR w - - - 1");
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        3, qs_rook_ks_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "1r3rk1/p1pp1ppp/8/8/1p6/P1P1p3/1P1PPPPP/RNBQKBNR w - - - 2");
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        3, qs_rook_qs_castle);
+    ck_assert_ptr_eq(res, NULL);
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        3, ks_rook_qs_castle);
+    ck_assert_ptr_ne(res, NULL);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "2kr2r1/p1pp1ppp/8/8/1p6/P1P1p3/1P1PPPPP/RNBQKBNR w - - - 2");
+
+    res = apply_moves_to_fen(
+        "r3k2r/p1pp1ppp/8/8/1p6/P3p3/1PPPPPPP/RNBQKBNR b kq - - -",
+        3, ks_rook_ks_castle);
+    ck_assert_ptr_eq(res, NULL);
+}
+END_TEST
+
 START_TEST(test_en_passant)
 {
     struct move *res;
@@ -75,6 +151,7 @@ START_TEST(test_en_passant)
 
     res = apply_moves_to_fen(
         "3k4/p1p5/8/3P4/8/8/P7/3K4 b - - - -", 2, valid_moves);
+    ck_assert_ptr_ne(res, NULL);
     ck_assert_str_eq(
         res->post_board->fen,
         "3k4/p7/2P5/8/8/8/P7/3K4 b - - - 1");
@@ -147,6 +224,7 @@ int main()
 
     s = suite_create("grandmaster");
     tc = tcase_create("movement");
+    tcase_add_test(tc, test_castle);
     tcase_add_test(tc, test_en_passant);
     suite_add_tcase(s, tc);
 
