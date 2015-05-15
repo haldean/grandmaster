@@ -63,4 +63,4 @@ check: checkbin/test_core
 clean:
 	rm -rf build testbin checkbin dist
 
-.PHONY: clean move_parser test
+.PHONY: clean move_parser test check
