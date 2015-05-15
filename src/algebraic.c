@@ -208,6 +208,21 @@ parse_pawn(
     return 1;
 }
 
+size_t
+trim_commentary(const char *in)
+{
+    size_t end;
+    size_t in_len;
+    in_len = strlen(in);
+    for (end = 0; end < in_len; end++) {
+        if (in[end] == '!')
+            break;
+        if (in[end] == '?')
+            break;
+    }
+    return end;
+}
+
 void
 parse_algebraic(
     const char *input,
@@ -226,10 +241,11 @@ parse_algebraic(
 
     /* we modify the notation later to ease parsing, so we copy it here to avoid
      * modifying our input. */
-    input_len = strlen(input) + 1;
-    notation = calloc(input_len, sizeof(char));
+    input_len = trim_commentary(input);
+    notation = calloc(input_len + 1, sizeof(char));
     notation_head = notation;
     strncpy(notation, input, input_len);
+    notation[input_len] = '\0';
 
     /* create result and fill in known fields */
     result = calloc(1, sizeof(struct move));
