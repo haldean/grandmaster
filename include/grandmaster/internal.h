@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 #ifdef DEBUG
-#  define debugf(...) do { printf(__VA_ARGS__); putc('\n'); } while (0);
+#  define debugf(...) do { printf(__VA_ARGS__); putchar('\n'); } while (0);
 #else
 #  define debugf(...) do {} while (0);
 #endif
