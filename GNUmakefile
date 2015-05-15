@@ -45,22 +45,13 @@ dist/gm: $(STATICLIB) $(gmobjects)
 	@mkdir -p dist
 	$(CC) $(LDOPTS) $(gmobjects) -Ldist -lgrandmaster -o $@
 
-testbin/%: test/%.c $(STATICLIB)
-	@mkdir -p testbin
-	$(CC) $(COPTS) $< -Ldist -lgrandmaster $(LDOPTS) -o $@
-
-test: test/test_rules.py testbin/move_parser testbin/test_rules_harness testbin/is_in_check testbin/treetest
-	python test/test_rules.py -b -v $(only_test)
-	testbin/treetest quiet
-
-checkbin/%: check/%.c $(STATICLIB)
-	@mkdir -p checkbin
+build/check: check/*.c check/*.h $(STATICLIB)
 	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck $(LDOPTS) -o $@
 
-check: checkbin/test_core
-	checkbin/test_core
+check: build/check
+	build/check
 
 clean:
 	rm -rf build testbin checkbin dist
 
-.PHONY: clean move_parser test check
+.PHONY: clean check

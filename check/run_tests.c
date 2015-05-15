@@ -1,6 +1,5 @@
 /*
- * is_in_check.c: returns zero if in check, 1 if not in check, 2 if in checkmate
- * or 3 on failure.
+ * run_tests.c: runs all check test suites
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,33 +17,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "grandmaster/core.h"
-#include "grandmaster/internal.h"
+#include <check.h>
 
-#include <stdio.h>
-#include <string.h>
+#include "test_core.h"
+#include "test_tree.h"
 
-int
-main(int argc, char *argv[])
+
+int main()
 {
-    struct move *last;
+    int n_failures;
+    SRunner *sr;
 
-    if (argc < 2) {
-        fprintf(stderr, "usage: %s [FEN]\n", argv[0]);
-        return 3;
-    }
+    sr = srunner_create(make_core_suite());
+    srunner_add_suite(sr, make_tree_suite());
+    srunner_run_all(sr, CK_NORMAL);
+    n_failures = srunner_ntests_failed(sr);
+    srunner_free(sr);
 
-    last = parse_fen(argv[1], strlen(argv[1]));
-    if (last == NULL) {
-        fprintf(stderr, "failed to parse FEN string %s\n", argv[1]);
-        return 3;
-    }
-
-    if (in_stalemate(last, opposite(last->player)))
-        return 3;
-    if (in_checkmate(last, opposite(last->player)))
-        return 2;
-    if (in_check(last, opposite(last->player)))
-        return 0;
-    return 1;
+    return n_failures;
 }

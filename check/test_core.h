@@ -1,5 +1,5 @@
 /*
- * test_rules.py: functional tests for move parsing
+ * test_core.h: unit tests for grandmaster core
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -277,14 +277,13 @@ START_TEST(test_stalemate)
 }
 END_TEST
 
-int main()
+Suite *
+make_core_suite()
 {
-    int n_failures;
     Suite *s;
-    SRunner *sr;
     TCase *tc;
 
-    s = suite_create("grandmaster");
+    s = suite_create("core");
     tc = tcase_create("movement");
     tcase_add_test(tc, test_pawn);
     tcase_add_test(tc, test_bishop);
@@ -301,10 +300,5 @@ int main()
     tcase_add_test(tc, test_check_movement);
     suite_add_tcase(s, tc);
 
-    sr = srunner_create(s);
-    srunner_run_all(sr, CK_NORMAL);
-    n_failures = srunner_ntests_failed(sr);
-    srunner_free(sr);
-
-    return n_failures;
+    return s;
 }

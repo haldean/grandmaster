@@ -20,20 +20,16 @@
 #include "grandmaster/core.h"
 #include "grandmaster/tree.h"
 
+#include <check.h>
 #include <jansson.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int
-main(int argc, char *argv[])
+START_TEST(test_tree)
 {
     struct game_tree *gt;
-    json_t *results;
     game_id_t g1, g2, g3;
-    bool quiet;
-
-    quiet = argc > 1 && strncmp(argv[1], "quiet", 6) == 0;
 
     gt = calloc(1, sizeof(struct game_tree));
     init_gametree(gt);
@@ -48,22 +44,25 @@ main(int argc, char *argv[])
     make_move(gt, g3, "Nc3");
 
     if (gt->n_states != 4) {
-        fprintf(stderr, "expected 4 states, got %lu\n", gt->n_states);
-        return 1;
+        ck_abort_msg("expected 4 states, got %lu\n", gt->n_states);
     }
     if (gt->games[g1]->current->parent != gt->games[g2]->current) {
-        fprintf(stderr, "g1's parent should be g2\n");
-        return 1;
+        ck_abort_msg("g1's parent should be g2\n");
     }
-
-    if (quiet) {
-        fprintf(stderr, "OK\n");
-    } else {
-        results = game_tree_to_json(gt);
-        json_dumpf(results, stdout, JSON_PRESERVE_ORDER | JSON_INDENT(2));
-        printf("\n");
-    }
-
     free_game_tree(gt);
-    return 0;
+}
+END_TEST
+
+Suite *
+make_tree_suite()
+{
+    Suite *s;
+    TCase *tc;
+
+    s = suite_create("tree");
+    tc = tcase_create("tree");
+    tcase_add_test(tc, test_tree);
+    suite_add_tcase(s, tc);
+
+    return s;
 }
