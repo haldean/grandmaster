@@ -67,6 +67,13 @@ make_move(
     game_id_t game,
     const char *notation);
 
+game_id_t
+new_game_from_pgn(
+    struct game_tree *gt,
+    player_id_t white,
+    player_id_t black,
+    const char *pgn);
+
 void
 free_game_tree(struct game_tree *gt);
 

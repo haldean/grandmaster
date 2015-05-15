@@ -19,6 +19,7 @@
 
 #include "grandmaster/core.h"
 #include "grandmaster/internal.h"
+#include "grandmaster/tree.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,13 +32,13 @@
         printf("pgn_fail: "); \
         printf(__VA_ARGS__); \
         printf("\n"); \
-        goto error; } while (0);
+        goto error; } while (0)
 #else
-#  define pgn_fail(...) do { goto error; } while (0);
+#  define pgn_fail(...) do { goto error; } while (0)
 #endif
 
 int
-read_ply(const char *pgn, const int n, int *const i, char *const notation)
+read_ply(const char *pgn, const size_t n, size_t *const i, char *const notation)
 {
     int notation_i;
 
@@ -62,7 +63,7 @@ read_ply(const char *pgn, const int n, int *const i, char *const notation)
 int
 read_termination(const char *pgn, const int n, int i)
 {
-    // first consume all whitespace
+    /* first consume all whitespace */
     while ((pgn[i] == '\n' || pgn[i] == ' ') && i < n)
         i++;
     if (i == n)
@@ -81,27 +82,27 @@ read_termination(const char *pgn, const int n, int i)
     return 1;
 }
 
-struct move *
-parse_pgn(const char *pgn, int n, struct move *start)
+game_id_t
+new_game_from_pgn(
+    struct game_tree *gt,
+    player_id_t white,
+    player_id_t black,
+    const char *pgn)
 {
-    struct move *last;
-    struct move *next;
     char notation[MAX_NOTATION_LEN+1];
-    int i;
+    size_t i;
+    size_t n;
     int err;
+    bool success;
+    game_id_t game_id;
 
-    if (start == NULL) {
-        last = calloc(1, sizeof(struct move));
-        get_root(last);
-    } else {
-        last = start;
-    }
-
+    game_id = new_game(gt, white, black);
+    n = strlen(pgn);
     for (i = 0; i < n; i++) {
-        // strip out whitespace and metadata before reading the move
+        /* strip out whitespace and metadata before reading the move */
         while ((pgn[i] == ' ' || pgn[i] == '\n' || pgn[i] == '[') && i < n) {
-            // ignore PGN metadata by nongreedily consuming until the closing square
-            // bracket.
+            /* ignore PGN metadata by nongreedily consuming until the closing
+             * square bracket. */
             if (pgn[i] == '[') {
                 while (pgn[i] != ']' && i < n)
                     i++;
@@ -111,50 +112,46 @@ parse_pgn(const char *pgn, int n, struct move *start)
             i++;
         }
         if (i == n)
-            return last;
-        // find the next period, which marks the start of the move. at the end
-        // of this chunk, i points to the character after the period.
+            return game_id;
+        /* find the next period, which marks the start of the move. at the end
+         * of this chunk, i points to the character after the period. */
         while (pgn[i] != '.' && i < n)
             i++;
         if (i == n)
-            return last;
+            return game_id;
         i++;
 
         err = read_ply(pgn, n, &i, notation);
         if (err)
-            pgn_fail("failed to read white ply at i = %d", i)
-
-        parse_algebraic(notation, last, &next);
-        if (next == NULL)
-            pgn_fail("failed to parse white ply %s", notation)
-        last = next;
+            pgn_fail("failed to read white ply at i = %d", i);
+        success = make_move(gt, game_id, notation);
+        if (!success)
+            pgn_fail("failed to parse white ply %s", notation);
         if (i == n)
-            return last;
+            return game_id;
 
+        /* TODO: use this! */
         err = read_termination(pgn, n, i);
         if (!err)
-            return last;
+            return game_id;
 
         err = read_ply(pgn, n, &i, notation);
         if (err)
-            pgn_fail("failed to read black ply at i = %d", i)
+            pgn_fail("failed to read black ply at i = %d", i);
+        success = make_move(gt, game_id, notation);
+        if (!success)
+            pgn_fail("failed to parse black ply %s", notation);
 
-        parse_algebraic(notation, last, &next);
-        if (next == NULL)
-            pgn_fail("failed to parse black ply %s", notation)
-        last = next;
-
+        /* TODO: use this! */
         err = read_termination(pgn, n, i);
         if (!err)
-            return last;
+            return game_id;
     }
 
-    return last;
+    return game_id;
 
 error:
-    if (last != NULL)
-        free_move_tree(last);
-    return NULL;
+    return NO_GAME;
 }
 
 char *
