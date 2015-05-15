@@ -89,4 +89,8 @@ free_move_tree(struct move *move);
 char *
 create_pgn(struct move *move);
 
+/* Convert a board struct to Forsythe-Edwards Notation. */
+char *
+board_to_fen(struct board *board, color_t player);
+
 #endif

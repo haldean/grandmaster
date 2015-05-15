@@ -39,10 +39,9 @@
 #endif
 
 char *
-move_to_fen(const struct move *move)
+board_to_fen(struct board *board, color_t player)
 {
     char *fen;
-    struct board *board = move->post_board;
     struct piece *p;
     int i;
     int rank;
@@ -74,7 +73,7 @@ move_to_fen(const struct move *move)
     }
 
     fen[i++] = ' ';
-    fen[i++] = opposite(move->player);
+    fen[i++] = opposite(player);
 
     fen[i++] = ' ';
     if (!board->available_castles)
@@ -94,7 +93,7 @@ move_to_fen(const struct move *move)
         fen[i++] = '-';
     } else {
         fen[i++] = 'a' + board->passant_file;
-        if (move->player == WHITE)
+        if (player == WHITE)
             fen[i++] = '3';
         else
             fen[i++] = '6';
@@ -108,6 +107,12 @@ move_to_fen(const struct move *move)
         (int) ceil(board->ply_index / 2.));
 
     return fen;
+}
+
+char *
+move_to_fen(const struct move *move)
+{
+    return board_to_fen(move->post_board, move->player);
 }
 
 int

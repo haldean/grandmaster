@@ -18,6 +18,7 @@
  */
 
 #include "grandmaster/core.h"
+#include "grandmaster/internal.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -29,6 +30,8 @@ load_default_board(struct board *b)
     b->available_castles =
         WHITE_KINGSIDE | WHITE_QUEENSIDE | BLACK_KINGSIDE | BLACK_QUEENSIDE;
     b->passant_file = NO_PASSANT;
+    b->ply_index = 0;
+    b->pgn = "";
 
     b->board[0][0] = (struct piece) { .color = WHITE, .piece_type = ROOK };
     b->board[0][1] = (struct piece) { .color = WHITE, .piece_type = KNIGHT };
@@ -64,6 +67,12 @@ load_default_board(struct board *b)
     b->board[7][7] = (struct piece) { .color = BLACK, .piece_type = ROOK };
 
     b->access_map = calloc(1, sizeof(struct access_map));
+    b->termination = AVAILABLE_MOVE;
+    b->draws = DRAW_NONE;
+    b->in_check = false;
+    b->fifty_move_counter = 0;
+
+    b->fen = board_to_fen(b, BLACK);
 }
 
 void
