@@ -124,7 +124,7 @@ in_checkmate(struct move *move, color_t player)
                 test_pos.rank + '1');
             parse_algebraic(move_str, move, &test_move);
             if (test_move != NULL) {
-                printf("can escape with %s\n", move_str);
+                debugf("can escape with %s\n", move_str);
                 free_move(test_move);
                 return false;
             }
@@ -155,7 +155,7 @@ in_checkmate(struct move *move, color_t player)
     }
 
     /* See if anything can capture the threatening piece. */
-    printf("threat: %c%c\n", threats[0].file + 'a', threats[0].rank + '1');
+    debugf("threat: %c%c\n", threats[0].file + 'a', threats[0].rank + '1');
     if (can_attack(move, threats[0], player)) {
         free(threats);
         return false;

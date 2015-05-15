@@ -21,6 +21,13 @@
 #define __GRANDMASTER_INTERNAL_H__
 
 #include "grandmaster/core.h"
+#include <stdio.h>
+
+#ifdef DEBUG
+#  define debugf(...) do { printf(__VA_ARGS__); putc('\n'); } while (0);
+#else
+#  define debugf(...) do {} while (0);
+#endif
 
 void
 read_location(const char *str, struct position *result);
