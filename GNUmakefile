@@ -57,8 +57,8 @@ checkbin/%: check/%.c $(STATICLIB)
 	@mkdir -p checkbin
 	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck $(LDOPTS) -o $@
 
-check: checkbin/in_check
-	checkbin/in_check
+check: checkbin/test_core
+	checkbin/test_core
 
 clean:
 	rm -rf build testbin checkbin dist
