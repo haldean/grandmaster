@@ -49,10 +49,92 @@ check_status(char *fen)
     return MOVE_AVAILABLE;
 }
 
+struct move *
+apply_moves_to_fen(char *fen, size_t n_moves, char *moves[])
+{
+    struct move *last;
+    struct move *next;
+    size_t i;
+
+    last = parse_fen(fen, strlen(fen));
+    for (i = 0; i < n_moves; i++) {
+        parse_algebraic(moves[i], last, &next);
+        if (next == NULL)
+            return NULL;
+        last = next;
+    }
+
+    return last;
+}
+
+START_TEST(test_en_passant)
+{
+    struct move *res;
+    char *valid_moves[2] = {"c5", "dxc6"};
+    char *invalid_moves[4] = {"c5", "a3", "a5", "dxc6"};
+
+    res = apply_moves_to_fen(
+        "3k4/p1p5/8/3P4/8/8/P7/3K4 b - - - -", 2, valid_moves);
+    ck_assert_str_eq(
+        res->post_board->fen,
+        "3k4/p7/2P5/8/8/8/P7/3K4 b - - - 1");
+
+    res = apply_moves_to_fen(
+        "3k4/p1p5/8/3P4/8/8/P7/3K4 b - - - -", 4, invalid_moves);
+    ck_assert_ptr_eq(res, NULL);
+}
+END_TEST
+
+START_TEST(test_not_in_check)
+{
+    ck_assert_int_eq(
+        MOVE_AVAILABLE,
+        check_status("3k4/2p5/8/B2P4/8/8/8/3K4 b - - - -"));
+}
+END_TEST
+
 START_TEST(test_in_check)
 {
     ck_assert_int_eq(
-        CHECK, check_status("3k4/8/8/B2P4/8/8/8/3K4 b - - - -"));
+        CHECK,
+        check_status("3k4/8/8/B2P4/8/8/8/3K4 b - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("3k4/8/8/B2P4/8/8/8/3K1r2 b - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("3k4/8/8/B2P4/8/8/8/3K1r2 w - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("3k4/3Q4/8/B2P4/8/8/8/3K4 b - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("3k4/r2Q4/8/3P4/B7/8/8/3K4 b - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("2Bkr3/r7/3Q4/8/B7/8/8/3K4 b - - - -"));
+    ck_assert_int_eq(
+        CHECK,
+        check_status("k7/8/3r4/4q3/5r2/8/2R5/4K3 w - - - -"));
+}
+END_TEST
+
+START_TEST(test_checkmate)
+{
+    ck_assert_int_eq(
+        CHECKMATE,
+        check_status("3k4/3Q4/8/3P4/B7/8/8/3K4 b - - - -"));
+}
+END_TEST
+
+START_TEST(test_stalemate)
+{
+    ck_assert_int_eq(
+        STALEMATE,
+        check_status("3k4/8/8/8/8/1r6/2r5/K7 w - - - -"));
+    ck_assert_int_eq(
+        STALEMATE,
+        check_status("5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b - - - -"));
 }
 END_TEST
 
@@ -64,8 +146,16 @@ int main()
     TCase *tc;
 
     s = suite_create("grandmaster");
+    tc = tcase_create("movement");
+    tcase_add_test(tc, test_en_passant);
+    suite_add_tcase(s, tc);
+
+
     tc = tcase_create("in_check");
     tcase_add_test(tc, test_in_check);
+    tcase_add_test(tc, test_not_in_check);
+    tcase_add_test(tc, test_checkmate);
+    tcase_add_test(tc, test_stalemate);
     suite_add_tcase(s, tc);
 
     sr = srunner_create(s);
