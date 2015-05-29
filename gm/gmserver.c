@@ -93,7 +93,7 @@ handle_client(
     t = json_object_get(resp, "error");
     if (json_string_value(t) == NULL) {
         /* +1 to account for null byte, which acts as a delimiter */
-        fwrite(req, req_len + 1, 1, aol);
+        fwrite(req_msg, req_len + 1, 1, aol);
         ok = true;
     }
 
