@@ -34,6 +34,99 @@
 
 static int sockfd = -1;
 
+json_t *
+handle_json(
+    struct game_tree *gt,
+    char *req_msg)
+{
+    const char *req_kind;
+    size_t req_kind_len;
+    json_t *req;
+    json_t *resp;
+    json_t *t;
+    json_error_t json_err;
+
+    req = json_loads(req_msg, 0, &json_err);
+    if (!req) {
+        fprintf(stderr, "I: unable to parse json\n");
+        return json_pack("{ss}", "error", "couldn't parse json");
+    }
+
+    t = json_object_get(req, "kind");
+    if (t == NULL) {
+        resp = json_pack("{ss}", "error", "no kind in request");
+    } else {
+        req_kind = json_string_value(t);
+        req_kind_len = strnlen(req_kind, MAX_MSG_LEN);
+
+        if (strncmp(req_kind, "new_game", req_kind_len) == 0) {
+            resp = handle_new_game(gt, req);
+        } else if (strncmp(req_kind, "move", req_kind_len) == 0) {
+            resp = handle_move(gt, req);
+        } else if (strncmp(req_kind, "game_from_pgn", req_kind_len) == 0) {
+            resp = handle_game_from_pgn(gt, req);
+        } else if (strncmp(req_kind, "end_game", req_kind_len) == 0) {
+            resp = handle_end_game(gt, req);
+        } else {
+            resp = json_pack("{ss}", "error", "unknown kind");
+        }
+    }
+
+    json_decref(req);
+    return resp;
+}
+
+int
+load_aol(struct game_tree *gt, FILE *aol)
+{
+    int msg_n;
+    long region_start;
+    long region_end;
+    char buf[MAX_MSG_LEN];
+    size_t read_len;
+    size_t i;
+    int res;
+
+    rewind(aol);
+    msg_n = 0;
+
+    while (!feof(aol)) {
+        region_start = ftell(aol);
+        if (region_start < 0) {
+            perror("E: aol ftell failed");
+            return 1;
+        }
+
+        read_len = fread(buf, sizeof(char), MAX_MSG_LEN, aol);
+        if (read_len == 0)
+            break;
+        for (i = 0; i < read_len; i++)
+            if (buf[i] == 0)
+                break;
+        if (buf[i] == 0) {
+            region_end = region_start + i;
+        } else {
+            printf("E: no trailing NUL on aol record %d\n", msg_n);
+            return 1;
+        }
+
+        if (handle_json(gt, buf) == NULL) {
+            printf("E: failed to parse record %d\n", msg_n);
+            return 1;
+        }
+
+        res = fseek(aol, region_end + 1, SEEK_SET);
+        if (res != 0) {
+            perror("E: aol seek failed");
+            return 1;
+        }
+        msg_n++;
+    }
+
+    printf("I: read %d records from aol\n", msg_n);
+    return 0;
+}
+
 bool
 handle_client(
     struct game_tree *gt,
@@ -42,17 +135,11 @@ handle_client(
 {
     char *req_msg;
     char *resp_msg;
-    const char *req_kind;
-    size_t req_kind_len;
     size_t req_len;
-    json_t *req;
     json_t *resp;
     json_t *t;
-    json_error_t json_err;
     bool ok;
 
-    req = NULL;
-    resp = NULL;
     ok = false;
 
     req_msg = read_str(insock, MAX_MSG_LEN);
@@ -63,45 +150,20 @@ handle_client(
     }
     req_len = strlen(req_msg);
 
-    req = json_loads(req_msg, 0, &json_err);
-    if (!req) {
-        fprintf(stderr, "I: unable to parse json\n");
-        resp = json_pack("{ss}", "error", "couldn't parse json");
+    resp = handle_json(gt, req_msg);
+    if (resp == NULL)
         goto close;
-    }
-
-    t = json_object_get(req, "kind");
-    if (t == NULL) {
-        resp = json_pack("{ss}", "error", "no kind in request");
-        goto close;
-    }
-    req_kind = json_string_value(t);
-    req_kind_len = strnlen(req_kind, MAX_MSG_LEN);
-
-    if (strncmp(req_kind, "new_game", req_kind_len) == 0) {
-        resp = handle_new_game(gt, req);
-    } else if (strncmp(req_kind, "move", req_kind_len) == 0) {
-        resp = handle_move(gt, req);
-    } else if (strncmp(req_kind, "game_from_pgn", req_kind_len) == 0) {
-        resp = handle_game_from_pgn(gt, req);
-    } else if (strncmp(req_kind, "end_game", req_kind_len) == 0) {
-        resp = handle_end_game(gt, req);
-    } else {
-        resp = json_pack("{ss}", "error", "unknown kind");
-    }
 
     t = json_object_get(resp, "error");
     if (json_string_value(t) == NULL) {
         /* +1 to account for null byte, which acts as a delimiter */
         fwrite(req_msg, req_len + 1, 1, aol);
+        fflush(aol);
         ok = true;
     }
 
 close:
     free(req_msg);
-    if (req != NULL) {
-        json_decref(req);
-    }
     if (resp != NULL) {
         resp_msg = json_dumps(resp, JSON_PRESERVE_ORDER | JSON_INDENT(4));
         send_str(insock, resp_msg);
@@ -121,7 +183,6 @@ run_gm(struct game_tree *gt, FILE *aol)
     struct addrinfo hints;
     struct sockaddr inaddr;
     socklen_t inaddr_len;
-    struct aol_tx tx;
 
     sockfd = -1;
 
@@ -161,11 +222,7 @@ run_gm(struct game_tree *gt, FILE *aol)
             perror("E: accept error");
             goto close;
         }
-        tx = start_aol_tx(aol);
-        if (handle_client(gt, insock, tx.f))
-            commit_aol_tx(aol, tx);
-        else
-            cancel_aol_tx(aol, tx);
+        handle_client(gt, insock, aol);
     }
 
 close:

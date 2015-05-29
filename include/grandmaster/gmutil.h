@@ -28,7 +28,7 @@
 
 struct aol_tx {
     FILE *f;
-    const char *path;
+    char *path;
 };
 
 /* Receive a length-encoded string on the given socket. */
@@ -51,15 +51,3 @@ handle_game_from_pgn(struct game_tree *gt, json_t *req);
 
 json_t *
 handle_end_game(struct game_tree *gt, json_t *req);
-
-int
-load_aol(struct game_tree *gt, FILE *aol);
-
-struct aol_tx
-start_aol_tx(FILE *aol);
-
-void
-commit_aol_tx(FILE *aol, struct aol_tx tx);
-
-void
-cancel_aol_tx(FILE *aol, struct aol_tx tx);
