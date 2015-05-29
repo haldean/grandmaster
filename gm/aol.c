@@ -1,5 +1,5 @@
 /*
- * gmutil.c: utilities for grandmaster server code
+ * aol.c: utilities for append-only logs
  * Copyright (C) 2015, Haldean Brown
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,47 +19,35 @@
 
 #include <grandmaster/core.h>
 #include <grandmaster/tree.h>
-
-#include <jansson.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#define MAX_MSG_LEN 16384
-
-struct aol_tx {
-    FILE *f;
-    const char *path;
-};
-
-/* Receive a length-encoded string on the given socket. */
-char *
-read_str(int sock, ssize_t max_len);
-
-/* Send a length-encoded string on the given socket. Returns 0 on success or -1
- * on error.*/
-int
-send_str(int sock, char *str);
-
-json_t *
-handle_new_game(struct game_tree *gt, json_t *req);
-
-json_t *
-handle_move(struct game_tree *gt, json_t *req);
-
-json_t *
-handle_game_from_pgn(struct game_tree *gt, json_t *req);
-
-json_t *
-handle_end_game(struct game_tree *gt, json_t *req);
+#include <grandmaster/gmutil.h>
 
 int
-load_aol(struct game_tree *gt, FILE *aol);
+load_aol(struct game_tree *gt, FILE *aol)
+{
+    (void)(gt);
+    (void)(aol);
+    return 0;
+}
 
 struct aol_tx
-start_aol_tx(FILE *aol);
+start_aol_tx(FILE *aol)
+{
+    struct aol_tx tx;
+    tx.f = aol;
+    tx.path = NULL;
+    return tx;
+}
 
 void
-commit_aol_tx(FILE *aol, struct aol_tx tx);
+commit_aol_tx(FILE *aol, struct aol_tx tx)
+{
+    (void)(aol);
+    (void)(tx);
+}
 
 void
-cancel_aol_tx(FILE *aol, struct aol_tx tx);
+cancel_aol_tx(FILE *aol, struct aol_tx tx)
+{
+    (void)(aol);
+    (void)(tx);
+}

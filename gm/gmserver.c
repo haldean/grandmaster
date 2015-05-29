@@ -34,22 +34,26 @@
 
 static int sockfd = -1;
 
-void
+bool
 handle_client(
     struct game_tree *gt,
-    int insock)
+    int insock,
+    FILE *aol)
 {
     char *req_msg;
     char *resp_msg;
     const char *req_kind;
     size_t req_kind_len;
+    size_t req_len;
     json_t *req;
     json_t *resp;
     json_t *t;
     json_error_t json_err;
+    bool ok;
 
     req = NULL;
     resp = NULL;
+    ok = false;
 
     req_msg = read_str(insock, MAX_MSG_LEN);
     if (req_msg == NULL) {
@@ -57,6 +61,7 @@ handle_client(
         resp = json_pack("{ss}", "error", "couldn't load message string");
         goto close;
     }
+    req_len = strlen(req_msg);
 
     req = json_loads(req_msg, 0, &json_err);
     if (!req) {
@@ -85,6 +90,13 @@ handle_client(
         resp = json_pack("{ss}", "error", "unknown kind");
     }
 
+    t = json_object_get(resp, "error");
+    if (json_string_value(t) == NULL) {
+        /* +1 to account for null byte, which acts as a delimiter */
+        fwrite(req, req_len + 1, 1, aol);
+        ok = true;
+    }
+
 close:
     free(req_msg);
     if (req != NULL) {
@@ -97,10 +109,11 @@ close:
         json_decref(resp);
     }
     close(insock);
+    return ok;
 }
 
 void
-run_gm(struct game_tree *gt)
+run_gm(struct game_tree *gt, FILE *aol)
 {
     int err;
     int insock;
@@ -108,6 +121,7 @@ run_gm(struct game_tree *gt)
     struct addrinfo hints;
     struct sockaddr inaddr;
     socklen_t inaddr_len;
+    struct aol_tx tx;
 
     sockfd = -1;
 
@@ -147,7 +161,11 @@ run_gm(struct game_tree *gt)
             perror("E: accept error");
             goto close;
         }
-        handle_client(gt, insock);
+        tx = start_aol_tx(aol);
+        if (handle_client(gt, insock, tx.f))
+            commit_aol_tx(aol, tx);
+        else
+            cancel_aol_tx(aol, tx);
     }
 
 close:
@@ -175,12 +193,32 @@ handle_signal(int sig)
 }
 
 int
-server_main()
+server_main(int argc, char *argv[])
 {
     struct game_tree gt;
+    FILE *aol;
+    char *aol_path;
+    int res;
+
+    if (argc < 2) {
+        printf("usage: gm server path/to/append-only.log\n");
+        return 1;
+    }
+    aol_path = argv[1];
+
     signal(SIGTERM, handle_signal);
     signal(SIGINT, handle_signal);
+
+    aol = fopen(aol_path, "a+");
+    if (aol == NULL) {
+        perror("E: append-only log couldn't be opened");
+        return 1;
+    }
+
     init_gametree(&gt);
-    run_gm(&gt);
+    res = load_aol(&gt, aol);
+    if (res != 0)
+        return res;
+    run_gm(&gt, aol);
     return 0;
 }

@@ -33,7 +33,7 @@ main(int argc, char *argv[])
     if (strcmp(argv[1], "client") == 0)
         return client_main();
     if (strcmp(argv[1], "server") == 0)
-        return server_main();
+        return server_main(argc, argv);
     fprintf(stderr, "unrecognized operating mode %s\n", argv[1]);
     return 1;
 }
