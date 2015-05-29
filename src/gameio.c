@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <jansson.h>
 #include <stdio.h>
+#include <string.h>
 
 #define json_set json_object_set_new_nocheck
 #define json_bool(x) ((x) ? json_true() : json_false())
@@ -78,6 +79,30 @@ termination_str(termination_t term)
     default:
         return "bad_termination_value";
     }
+}
+
+termination_t
+termination_from_str(const char *str)
+{
+    size_t str_len;
+    str_len = strlen(str);
+    if (strncmp("available_move", str, str_len) == 0)
+        return AVAILABLE_MOVE;
+    if (strncmp("victory_white", str, str_len) == 0)
+        return VICTORY_WHITE;
+    if (strncmp("victory_black", str, str_len) == 0)
+        return VICTORY_BLACK;
+    if (strncmp("stalemate", str, str_len) == 0)
+        return STALEMATE;
+    if (strncmp("taken_draw_white", str, str_len) == 0)
+        return TAKEN_DRAW_WHITE;
+    if (strncmp("taken_draw_black", str, str_len) == 0)
+        return TAKEN_DRAW_BLACK;
+    if (strncmp("resignation_white", str, str_len) == 0)
+        return RESIGNATION_WHITE;
+    if (strncmp("resignation_black", str, str_len) == 0)
+        return RESIGNATION_BLACK;
+    return INVALID;
 }
 
 void

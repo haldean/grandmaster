@@ -108,6 +108,47 @@ JSON object in the request.
             "error": description of error (string),
         }
 
+    --------------------------------------------------------------
+    kind = "end_game"
+
+    To voluntarily end a game, send a request with kind set to
+    "end_game". The full structure of the request is:
+
+        {
+            "kind": "end_game",
+            "player": player ID (long int),
+            "game_id": game ID (long int),
+            "termination": termination type (string),
+        }
+
+    Valid termination strings are a subset of the termination
+    types described in the game state section below. The valid
+    voluntary terminations are:
+
+        "taken_draw_white"
+        "taken_draw_black"
+        "resignation_white"
+        "resignation_black"
+
+    Note that "taken_draw_white" and "taken_draw_black" are only
+    valid if the game is in a state in which there are draws
+    available, i.e., if the "draws" constant in the game state is
+    not zero.
+
+    The response structure for a successful end-game is:
+
+        {
+            "state": game state (see below),
+            "error": null,
+        }
+
+    The response structure for an invalid end-game is:
+
+        {
+            "state": null,
+            "error": description of error (string),
+        }
+
 ------------------------------------------------------------------
 Game state
 

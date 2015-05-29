@@ -42,3 +42,6 @@ handle_move(struct game_tree *gt, json_t *req);
 
 json_t *
 handle_game_from_pgn(struct game_tree *gt, json_t *req);
+
+json_t *
+handle_end_game(struct game_tree *gt, json_t *req);

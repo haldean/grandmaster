@@ -67,6 +67,8 @@ typedef enum {
     RESIGNATION_WHITE = 0x86,
     /* black has resigned, white wins by default */
     RESIGNATION_BLACK = 0x87,
+    /* sentinel invalid termination value */
+    INVALID = 0xFF,
 } termination_t;
 
 #define TERM_GAME_OVER_MASK 0x80
@@ -218,5 +220,9 @@ move_to_fen(const struct move *);
 /* String representation for a termination state. */
 char *
 termination_str(termination_t term);
+
+/* Termination state from a NUL-terminated string representation. */
+termination_t
+termination_from_str(const char *);
 
 #endif

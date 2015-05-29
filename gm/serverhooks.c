@@ -120,3 +120,78 @@ handle_move(struct game_tree *gt, json_t *req)
     }
     return json_pack("{snss}", "state", "error", "could not perform move");
 }
+
+json_t *
+handle_end_game(struct game_tree *gt, json_t *req)
+{
+    game_id_t game_id;
+    player_id_t player;
+    termination_t termination;
+    json_t *t;
+    bool success;
+    struct game *game;
+    color_t player_color;
+
+    get(t, req, "player");
+    player = json_integer_value(t);
+
+    get(t, req, "game_id");
+    game_id = json_integer_value(t);
+
+    get(t, req, "termination");
+    termination = termination_from_str(json_string_value(t));
+
+    if (get_game(gt, game_id) == NULL) {
+        return json_pack("{snss}", "state", "error", "game does not exist");
+    }
+    if (termination == INVALID) {
+        return json_pack("{snss}", "state", "error", "invalid termination");
+    }
+
+    game = get_game(gt, game_id);
+    if (player == game->player_white)
+        player_color = WHITE;
+    else if (player == game->player_black)
+        player_color = BLACK;
+    else
+        return json_pack("{snss}", "state", "error", "invalid player");
+
+    switch (termination)
+    {
+        case TAKEN_DRAW_WHITE:
+        case TAKEN_DRAW_BLACK:
+            if (game->current->move->player == player_color)
+                return json_pack(
+                    "{snss}", "state", "error",
+                    "player can only take draw on their move");
+            if (!game->current->move->post_board->draws)
+                return json_pack(
+                    "{snss}", "state", "error", "no draws available");
+        case RESIGNATION_WHITE:
+        case RESIGNATION_BLACK:
+            if (player_color == WHITE) {
+                if (termination == TAKEN_DRAW_BLACK ||
+                        termination == RESIGNATION_BLACK)
+                    return json_pack(
+                        "{snss}", "state", "error",
+                        "cannot end game for other player");
+            } else {
+                if (termination == TAKEN_DRAW_WHITE ||
+                        termination == RESIGNATION_WHITE)
+                    return json_pack(
+                        "{snss}", "state", "error",
+                        "cannot end game for other player");
+            }
+            success = end_game(gt, game_id, termination);
+            if (success) {
+                return json_pack(
+                    "{sosn}", "state", game_state(gt, game_id), "error");
+            }
+            return json_pack("{snss}", "state", "error", "unknown error");
+
+        default:
+            return json_pack(
+                "{snss}", "state",
+                "error", "provided termination cannot be voluntary");
+    }
+}

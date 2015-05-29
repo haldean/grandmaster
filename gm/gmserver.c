@@ -79,6 +79,8 @@ handle_client(
         resp = handle_move(gt, req);
     } else if (strncmp(req_kind, "game_from_pgn", req_kind_len) == 0) {
         resp = handle_game_from_pgn(gt, req);
+    } else if (strncmp(req_kind, "end_game", req_kind_len) == 0) {
+        resp = handle_end_game(gt, req);
     } else {
         resp = json_pack("{ss}", "error", "unknown kind");
     }
