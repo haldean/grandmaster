@@ -69,15 +69,11 @@ read_termination(const char *pgn, const int n, int i)
     if (i == n)
         return 1;
 
-    if (n - i - 1 < 3)
-        return 1;
     if (strncmp(&pgn[i], "1-0", 3) == 0)
         return 0;
     if (strncmp(&pgn[i], "0-1", 3) == 0)
         return 0;
-    if (n - i - 1 < 7)
-        return 1;
-    if (strncmp(&pgn[i], "1/2-1/2", 3) == 0)
+    if (strncmp(&pgn[i], "1/2-1/2", 7) == 0)
         return 0;
     return 1;
 }
