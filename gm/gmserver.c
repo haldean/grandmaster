@@ -23,6 +23,7 @@
 
 #include <jansson.h>
 #include <netdb.h>
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -159,6 +160,7 @@ handle_signal(int sig)
     int old_sockfd;
     switch (sig) {
     case SIGTERM:
+    case SIGINT:
         if (sockfd != -1) {
             /* set sockfd to -1 before closing it, so that the event loop
              * doesn't try to close the socket a second time immediately after
@@ -175,6 +177,7 @@ server_main()
 {
     struct game_tree gt;
     signal(SIGTERM, handle_signal);
+    signal(SIGINT, handle_signal);
     init_gametree(&gt);
     run_gm(&gt);
     return 0;
