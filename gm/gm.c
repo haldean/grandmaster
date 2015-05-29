@@ -26,14 +26,17 @@ extern int server_main();
 int
 main(int argc, char *argv[])
 {
-    if (argc != 2) {
+    char *op_mode;
+    if (argc < 2) {
         fprintf(stderr, "usage: gm [client|server]\n");
         return 1;
     }
-    if (strcmp(argv[1], "client") == 0)
+    op_mode = argv[1];
+    argc--; argv++;
+    if (strcmp(op_mode, "client") == 0)
         return client_main();
-    if (strcmp(argv[1], "server") == 0)
+    if (strcmp(op_mode, "server") == 0)
         return server_main(argc, argv);
-    fprintf(stderr, "unrecognized operating mode %s\n", argv[1]);
+    fprintf(stderr, "unrecognized operating mode %s\n", op_mode);
     return 1;
 }
