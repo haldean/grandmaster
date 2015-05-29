@@ -262,6 +262,8 @@ parse_algebraic(
                  last_move->post_board->termination);
     }
 
+    is_capture = false;
+
     if (parse_castle(notation, last_move, result)) {
         piece.piece_type = KING;
         piece.color = result->player;
@@ -279,7 +281,6 @@ parse_algebraic(
         }
     }
 
-    is_capture = false;
     capture_index = 0;
     for (i = 0; notation[i] != '\0'; i++) {
         if (notation[i] == 'x') {
