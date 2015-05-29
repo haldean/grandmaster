@@ -61,8 +61,15 @@ read_ply(const char *pgn, const size_t n, size_t *const i, char *const notation)
 }
 
 int
-read_termination(const char *pgn, const int n, int i)
+read_termination(
+        struct game_tree *gt,
+        game_id_t game_id,
+        const char *pgn,
+        const int n,
+        int i)
 {
+    termination_t termination;
+
     /* first consume all whitespace */
     while ((pgn[i] == '\n' || pgn[i] == ' ') && i < n)
         i++;
@@ -70,10 +77,15 @@ read_termination(const char *pgn, const int n, int i)
         return 1;
 
     if (strncmp(&pgn[i], "1-0", 3) == 0)
-        return 0;
-    if (strncmp(&pgn[i], "0-1", 3) == 0)
-        return 0;
-    if (strncmp(&pgn[i], "1/2-1/2", 7) == 0)
+        termination = VICTORY_WHITE;
+    else if (strncmp(&pgn[i], "0-1", 3) == 0)
+        termination = VICTORY_BLACK;
+    else if (strncmp(&pgn[i], "1/2-1/2", 7) == 0)
+        termination = STALEMATE;
+    else
+        return 1;
+
+    if (end_game(gt, game_id, termination))
         return 0;
     return 1;
 }
@@ -127,7 +139,7 @@ new_game_from_pgn(
             return game_id;
 
         /* TODO: use this! */
-        err = read_termination(pgn, n, i);
+        err = read_termination(gt, game_id, pgn, n, i);
         if (!err)
             return game_id;
 
@@ -139,7 +151,7 @@ new_game_from_pgn(
             pgn_fail("failed to parse black ply %s", notation);
 
         /* TODO: use this! */
-        err = read_termination(pgn, n, i);
+        err = read_termination(gt, game_id, pgn, n, i);
         if (!err)
             return game_id;
     }

@@ -67,6 +67,9 @@ make_move(
     game_id_t game,
     const char *notation);
 
+bool
+end_game(struct game_tree *gt, game_id_t game, termination_t termination);
+
 game_id_t
 new_game_from_pgn(
     struct game_tree *gt,

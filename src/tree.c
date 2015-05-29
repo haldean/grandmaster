@@ -152,6 +152,13 @@ get_game(struct game_tree *gt, game_id_t game)
     return NULL;
 }
 
+bool
+end_game(struct game_tree *gt, game_id_t game_id, termination_t termination)
+{
+    get_game(gt, game_id)->termination = termination;
+    return true;
+}
+
 void
 get_root(struct move *out)
 {
