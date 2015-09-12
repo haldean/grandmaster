@@ -46,7 +46,7 @@ dist/gm: $(STATICLIB) $(gmobjects)
 	$(CC) $(LDOPTS) $(gmobjects) -Ldist -lgrandmaster -o $@
 
 build/check: check/*.c check/*.h $(STATICLIB)
-	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck $(LDOPTS) -o $@
+	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck -lrt -lpthread $(LDOPTS) -o $@
 
 check: build/check
 	build/check
