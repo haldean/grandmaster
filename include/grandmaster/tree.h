@@ -65,6 +65,7 @@ bool
 make_move(
     struct game_tree *gt,
     game_id_t game,
+    player_id_t player,
     const char *notation);
 
 bool

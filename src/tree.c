@@ -83,6 +83,7 @@ bool
 make_move(
     struct game_tree *gt,
     game_id_t game_id,
+    player_id_t player,
     const char *notation)
 {
     struct game *game;
@@ -96,6 +97,14 @@ make_move(
     game = get_game(gt, game_id);
     if (game == NULL)
         return false;
+
+    if (game->current->move->player == WHITE) {
+        if (game->player_black != player)
+            return false;
+    } else {
+        if (game->player_white != player)
+            return true;
+    }
 
     move = NULL;
     parse_algebraic(notation, game->current->move, &move);

@@ -132,7 +132,7 @@ new_game_from_pgn(
         err = read_ply(pgn, n, &i, notation);
         if (err)
             pgn_fail("failed to read white ply at i = %lu", i);
-        success = make_move(gt, game_id, notation);
+        success = make_move(gt, game_id, white, notation);
         if (!success)
             pgn_fail("failed to parse white ply %s", notation);
         if (i == n)
@@ -146,7 +146,7 @@ new_game_from_pgn(
         err = read_ply(pgn, n, &i, notation);
         if (err)
             pgn_fail("failed to read black ply at i = %lu", i);
-        success = make_move(gt, game_id, notation);
+        success = make_move(gt, game_id, black, notation);
         if (!success)
             pgn_fail("failed to parse black ply %s", notation);
 
