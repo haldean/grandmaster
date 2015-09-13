@@ -37,20 +37,12 @@ static int sockfd = -1;
 json_t *
 handle_json(
     struct game_tree *gt,
-    char *req_msg)
+    json_t *req)
 {
     const char *req_kind;
     size_t req_kind_len;
-    json_t *req;
     json_t *resp;
     json_t *t;
-    json_error_t json_err;
-
-    req = json_loads(req_msg, 0, &json_err);
-    if (!req) {
-        fprintf(stderr, "I: unable to parse json\n");
-        return json_pack("{ss}", "error", "couldn't parse json");
-    }
 
     t = json_object_get(req, "kind");
     if (t == NULL) {
@@ -72,7 +64,6 @@ handle_json(
         }
     }
 
-    json_decref(req);
     return resp;
 }
 
@@ -86,6 +77,8 @@ load_aol(struct game_tree *gt, FILE *aol)
     size_t read_len;
     size_t i;
     int res;
+    json_t *req;
+    json_error_t json_err;
 
     rewind(aol);
     msg_n = 0;
@@ -110,7 +103,12 @@ load_aol(struct game_tree *gt, FILE *aol)
             return 1;
         }
 
-        if (handle_json(gt, buf) == NULL) {
+        req = json_loads(buf, 0, &json_err);
+        if (!req) {
+            printf("E: unable to parse record %d\n", msg_n);
+            return 1;
+        }
+        if (handle_json(gt, req) == NULL) {
             printf("E: failed to parse record %d\n", msg_n);
             return 1;
         }
@@ -135,9 +133,11 @@ handle_client(
 {
     char *req_msg;
     char *resp_msg;
+    json_t *req;
     size_t req_len;
     json_t *resp;
     json_t *t;
+    json_error_t json_err;
     bool ok;
 
     ok = false;
@@ -150,7 +150,14 @@ handle_client(
     }
     req_len = strlen(req_msg);
 
-    resp = handle_json(gt, req_msg);
+    req = json_loads(req_msg, 0, &json_err);
+    if (!req) {
+        fprintf(stderr, "I: unable to parse json\n");
+        resp = json_pack("{ss}", "error", "couldn't parse json");
+        goto close;
+    }
+
+    resp = handle_json(gt, req);
     if (resp == NULL)
         goto close;
 
@@ -164,6 +171,8 @@ handle_client(
 
 close:
     free(req_msg);
+    if (req != NULL)
+        json_decref(req);
     if (resp != NULL) {
         resp_msg = json_dumps(resp, JSON_PRESERVE_ORDER | JSON_INDENT(4));
         send_str(insock, resp_msg);
