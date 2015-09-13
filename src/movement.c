@@ -50,6 +50,10 @@ any_between(
     int d_file;
     const struct piece *p;
 
+    assert((start.rank == end.rank)
+        || (start.file == end.file)
+        || (abs(start.rank - end.rank) == abs(start.file - end.file)));
+
     rank_step = sign(end.rank - start.rank);
     file_step = sign(end.file - start.file);
     d_rank = rank_step;
