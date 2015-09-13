@@ -3,4 +3,6 @@ compile_commands.json
 testbin
 checkbin
 *.core
+core
 dist
+.gdb_history
