@@ -103,7 +103,7 @@ make_move(
             return false;
     } else {
         if (game->player_white != player)
-            return true;
+            return false;
     }
 
     move = NULL;
