@@ -60,9 +60,9 @@ int
 send_str(int sock, char *str)
 {
     ssize_t msg_len;
-    ssize_t msg_len_n;
     ssize_t sent;
     ssize_t total_sent;
+    uint32_t msg_len_n;
 
     msg_len = strlen(str);
     msg_len_n = htonl(msg_len);
