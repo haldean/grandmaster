@@ -116,6 +116,8 @@ pawn_movement_valid(const struct move *move)
         last_move_piece = &b->board[move->parent->end.rank][move->parent->end.file];
         if (last_move_piece->piece_type != PAWN)
             return false;
+        if (abs(move->start.file - move->end.file) != 1)
+            return false;
         if (move->player == WHITE) {
             if (move->start.rank != 4 || move->end.rank != 5)
                 return false;
