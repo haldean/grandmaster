@@ -83,7 +83,9 @@ pawn_movement_valid(const struct move *move)
     is_capture = b->board[move->end.rank][move->end.file].piece_type != 0;
     passant_file = move->parent->post_board->passant_file;
     may_be_passant =
-        passant_file != NO_PASSANT && move->end.file == passant_file;
+        passant_file != NO_PASSANT
+        && move->end.file == passant_file
+        && move->end.file != move->start.file;
 
     if (is_capture) {
         if (abs(move->start.file - move->end.file) != 1)
@@ -139,8 +141,10 @@ pawn_movement_valid(const struct move *move)
         }
     }
 
-    if (any_between(move->start, move->end, move->parent->post_board))
+    if (!may_be_passant
+            && any_between(move->start, move->end, move->parent->post_board)) {
         return false;
+    }
     return true;
 }
 
