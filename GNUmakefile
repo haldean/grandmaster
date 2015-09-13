@@ -43,7 +43,7 @@ build/gm/%.o: gm/%.c
 
 dist/gm: $(STATICLIB) $(gmobjects)
 	@mkdir -p dist
-	$(CC) $(LDOPTS) $(gmobjects) -Ldist -lgrandmaster -o $@
+	$(CC) $(gmobjects) -Ldist -lgrandmaster $(LDOPTS) -o $@
 
 build/check: check/*.c check/*.h $(STATICLIB)
 	$(CC) $(COPTS) $< -Ldist -lgrandmaster -lcheck -lrt -lpthread $(LDOPTS) -o $@

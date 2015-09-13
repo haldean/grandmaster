@@ -19,6 +19,10 @@
 
 #include <grandmaster/gmutil.h>
 
+#ifdef __linux__
+#include <arpa/inet.h>
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
